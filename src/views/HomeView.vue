@@ -4,6 +4,7 @@
 
     <div class="body row" style="margin-right: 0;">
       <div class="wrap col-9 p-2">
+        <CashierTab />
         <div class="left-card">
           <div class="card-title mb-2">
             Customer
@@ -301,6 +302,7 @@ import TextField from '@/components/form/TextField.vue'
 import ButtonField from '@/components/form/ButtonField.vue'
 import ListTable from '@/components/ListTable.vue'
 import SimpleButton from '@/components/SimpleButton.vue'
+import CashierTab from '@/components/CashierTab.vue'
 
 export default {
   name: 'HomeView',
@@ -309,7 +311,8 @@ export default {
     TextField,
     ButtonField,
     ListTable,
-    SimpleButton
+    SimpleButton,
+    CashierTab
   },
   data() {
     return {
@@ -349,19 +352,19 @@ export default {
           'diskon': '5.000',  
           'subtotal': '95.000'
         }
-      ]
+      ],
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 .body {
   background-color: #EBEFF4;
-  min-height: 90vh;
-  padding: 2rem 3rem;
+  height: 100vh;
+  padding: 6rem 3rem 2rem 3rem;
+  z-index: 1;
 }
-
 .body .left-card {
   background-color: white;
   padding: 1.5rem;

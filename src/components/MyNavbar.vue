@@ -7,7 +7,7 @@
       </div>
       <div class="header-right">
         <button class="p-0 border-0 bg-white">
-          <img src="./../assets/icon/profile.png" alt="Profile Icon" width="30px">
+          <img src="./../assets/icon/profile.png" alt="Profile Icon" width="20px">
         </button>
       </div>
     </header>
@@ -20,20 +20,26 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.mynavbar {
+  position: absolute;
+  width: 100%;
+  z-index: 2;
+}
 header {
   background-color: white;
-  padding: 1.3rem 3rem;
+  padding: 1rem 3rem;
 }
 
 header .header-name {
   font-weight: 600;
+  font-size: 12px;
 }
 
 header .header-date {
   color: #202020;
   opacity: 40%;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 header .header-right {
