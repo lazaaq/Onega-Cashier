@@ -1,6 +1,5 @@
 <template>
   <button class="simple-button">
-    <img :src="src-image" :alt="alt">
     <div class="ms-1">
       {{ text }}
     </div>
@@ -11,10 +10,8 @@
 export default {
   name: "SimpleButton",
   props: [
-    'src-image',
     'text',
-    'alt'
-  ]
+  ],
 }
 </script>
 

@@ -28,7 +28,7 @@ export default {
 }
 header {
   background-color: white;
-  padding: 1rem 3rem;
+  padding: 0.8rem 3vw;
 }
 
 header .header-name {

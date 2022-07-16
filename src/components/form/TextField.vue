@@ -10,7 +10,8 @@ export default {
   props: [
     'placeholder',
     'name',
-    'id'
+    'id',
+    'disabled'
   ]
 }
 </script>
@@ -22,7 +23,10 @@ export default {
 }
 .textfield input {
   border: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 8px 4px 8px 8px;
+  padding: 0.8vh 0.3vw 0.8vh 0.3vw;
   font-size: 12px;
+}
+.disabled {
+  background-color: rgba(0,0,0,0.5)
 }
 </style>

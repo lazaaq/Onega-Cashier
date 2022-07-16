@@ -20,7 +20,9 @@
         </td>
         <td class="d-flex align-items-center">
           <div class="me-2">{{ val['subtotal'] }}</div> 
-          <button class="trash-btn"><img src="./../assets/icon/trash.png" alt="Trash Button" width="80%"></button>
+          <button class="trash-btn" @click="tes">
+            <img :src="trashIcon" alt="Trash Button" width="80%">
+          </button>
         </td>
       </tr>
     </tbody>
@@ -32,20 +34,36 @@ export default {
   name: 'ListTable',
   props: [
     'thead',
-    'tbody'
-  ]
+    'tbody',
+    'trashIcon'
+  ],
+  methods: {
+    tes() {
+      console.log(this.trashIcon)
+    }
+  },
+  data() {
+    return {
+      
+    }
+  }
 }
 </script>
 
 <style scoped>
 .table {
-  font-size: 12px;
+  font-size: 11px;
+  margin-bottom: 0.5vh;
 }
 
 .table th {
   font-weight: 400;
   background-color: #079FB7;
   color: white;
+  padding: 1vh 1vw;
+}
+.table td {
+  padding: 0.75vh 1vw;
 }
 
 .table .item-promo {

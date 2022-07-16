@@ -2,9 +2,14 @@
   <div class="home">
     <MyNavbar/>
 
-    <div class="body row" style="margin-right: 0;">
-      <div class="wrap col-9 p-2">
-        <CashierTab />
+    <div class="body row mx-0" style="margin-right: 0;">
+      <div class="wrap col-9 pl-0 pr-2">
+        <CashierTab 
+          :activeTab="activeTab" 
+          @changetab="updateActiveTab($event)" 
+          @addtab="addTab($event)"
+          @closetab="closeTab($event)"
+        />
         <div class="left-card">
           <div class="card-title mb-2">
             Customer
@@ -17,27 +22,34 @@
               <ButtonField text='Cari'/>
             </div>
           </div>
-          <hr>
-          <div class="d-flex mb-3">
-            <div class="card-title">
+          <hr class="my-2">
+          <div class="d-flex mb-2 align-items-center">
+            <div class="card-title" style="margin-top: auto; margin-bottom: auto;">
               List Order
             </div>
             <div class="scan-wrap" style="margin-left:auto">
               <TextField placeholder="Input or Scan items" name="scan" id="scan"/>
             </div>
           </div>
-          <ListTable :thead="thead" :tbody="tbody"/>
+          <ListTable :thead="thead" :tbody="tbody[activeTab-1]" :trashIcon="trashIcon"/>
           <div class="d-flex">
             <div>
-              <SimpleButton src="./../assets/images/plus.png" text="Add On Item" alt="Add"/>
+              <SimpleButton
+                :text="'Add On Item'"
+                @click="addOnItem()"
+              />
             </div>
             <div style="margin-left:auto">
-              <SimpleButton src="./../assets/images/x.png" text="Delete All" alt="Delete" style="color:red"/>
+              <SimpleButton
+                text="Delete All"
+                @click="deleteAll()"
+                style="color:red"
+              />
             </div>
           </div>
         </div>
       </div>
-      <div class="wrap col-3 p-2">
+      <div class="wrap col-3 pl-2" style="padding-top: 27.78px">
         <div class="right-card">
           <div class="card-title">
             Detail Order
@@ -269,19 +281,19 @@
                 <div class="d-flex">
                   <div class="ms-auto me-2">
                     <button type="button" class="border-button">
-                      <img src="assets/icon/pencil.png" alt="" width="12px">
+                      <img src="@/assets/icon/pencil.png" alt="" width="12px">
                       <span>Notes</span>
                     </button>
                   </div>
                   <div class="me-2">
                     <button type="button" class="border-button">
-                      <img src="assets/icon/save.png" alt="" width="12px">
+                      <img src="@/assets/icon/save.png" alt="" width="12px">
                       <span>Save</span>
                     </button>
                   </div>
                   <div>
                     <button type="button" class="fill-button">
-                      <img src="assets/icon/print.png" alt="" width="12px">
+                      <img src="@/assets/icon/print.png" alt="" width="12px">
                       <span>Print</span>
                     </button>
                   </div>
@@ -314,8 +326,42 @@ export default {
     SimpleButton,
     CashierTab
   },
+  methods: {
+    updateActiveTab: function (newActiveTab) {
+      this.activeTab = newActiveTab
+    },
+    addTab: function (tabs) {
+      this.tbody.push([])
+      this.activeTab = tabs
+    },
+    closeTab: function (index) {
+      if (index + 1 <= this.activeTab) {
+        this.activeTab -= 1
+      }
+      this.tbody.splice(index, 1)
+      console.log(this.tbody)
+      console.log(index)
+      console.log(this.activeTab)
+    },
+    addOnItem: function () {
+      let newItem = {
+        'sku-code': 'SKH-121',
+        'item': 'Sun Kacang Hijau 100gr',
+        'promo': 'Promo MERDEKA 5%',
+        'price': '100.000',
+        'qty': 1,
+        'diskon': '5.000',
+        'subtotal': '95.000'
+      }
+      this.tbody[this.activeTab-1].push(newItem)
+    },
+    deleteAll: function () {
+      this.tbody[this.activeTab-1] = []
+    }
+  },
   data() {
     return {
+      trashIcon: require('@/assets/icon/trash.png'),
       thead: [
         'SKU Code',
         'Item',
@@ -325,34 +371,130 @@ export default {
         'Subtotal'
       ],
       tbody: [
-        {
-          'sku-code': 'SKH-121',
-          'item': 'Sun Kacang Hijau 100gr',
-          'promo': 'Promo MERDEKA 5%',
-          'price': '100.000',
-          'qty': '1',
-          'diskon': '5.000',  
-          'subtotal': '95.000'
-        },
-        {
-          'sku-code': 'SKH-121',
-          'item': 'Sun Kacang Hijau 100gr',
-          'promo': 'Promo MERDEKA 5%',
-          'price': '100.000',
-          'qty': '1',
-          'diskon': '5.000',  
-          'subtotal': '95.000'
-        },
-        {
-          'sku-code': 'SKH-121',
-          'item': 'Sun Kacang Hijau 100gr',
-          'promo': 'Promo MERDEKA 5%',
-          'price': '100.000',
-          'qty': '1',
-          'diskon': '5.000',  
-          'subtotal': '95.000'
-        }
+        [
+          {
+            'idx': 1,
+            'sku-code': 'SKH-121',
+            'item': 'Sun Kacang Hijau 100gr',
+            'promo': 'Promo MERDEKA 5%',
+            'price': '100.000',
+            'qty': 1,
+            'diskon': '5.000',
+            'subtotal': '95.000'
+          },
+          {
+            'idx': 2,
+            'sku-code': 'SKH-121',
+            'item': 'Sun Kacang Hijau 100gr',
+            'promo': 'Promo MERDEKA 5%',
+            'price': '100.000',
+            'qty': 1,
+            'diskon': '5.000',
+            'subtotal': '95.000'
+          },
+          {
+            'idx': 3,
+            'sku-code': 'SKH-121',
+            'item': 'Sun Kacang Hijau 100gr',
+            'promo': 'Promo MERDEKA 5%',
+            'price': '100.000',
+            'qty': 1,
+            'diskon': '5.000',
+            'subtotal': '95.000'
+          },
+          {
+            'idx': 3,
+            'sku-code': 'SKH-121',
+            'item': 'Sun Kacang Hijau 100gr',
+            'promo': 'Promo MERDEKA 5%',
+            'price': '100.000',
+            'qty': 1,
+            'diskon': '5.000',
+            'subtotal': '95.000'
+          },
+          {
+            'idx': 3,
+            'sku-code': 'SKH-121',
+            'item': 'Sun Kacang Hijau 100gr',
+            'promo': 'Promo MERDEKA 5%',
+            'price': '100.000',
+            'qty': 1,
+            'diskon': '5.000',
+            'subtotal': '95.000'
+          },
+          {
+            'idx': 3,
+            'sku-code': 'SKH-121',
+            'item': 'Sun Kacang Hijau 100gr',
+            'promo': 'Promo MERDEKA 5%',
+            'price': '100.000',
+            'qty': 1,
+            'diskon': '5.000',
+            'subtotal': '95.000'
+          },
+          {
+            'idx': 3,
+            'sku-code': 'SKH-121',
+            'item': 'Sun Kacang Hijau 100gr',
+            'promo': 'Promo MERDEKA 5%',
+            'price': '100.000',
+            'qty': 1,
+            'diskon': '5.000',
+            'subtotal': '95.000'
+          },
+          {
+            'idx': 3,
+            'sku-code': 'SKH-121',
+            'item': 'Sun Kacang Hijau 100gr',
+            'promo': 'Promo MERDEKA 5%',
+            'price': '100.000',
+            'qty': 1,
+            'diskon': '5.000',
+            'subtotal': '95.000'
+          },
+          {
+            'idx': 3,
+            'sku-code': 'SKH-121',
+            'item': 'Sun Kacang Hijau 100gr',
+            'promo': 'Promo MERDEKA 5%',
+            'price': '100.000',
+            'qty': 1,
+            'diskon': '5.000',
+            'subtotal': '95.000'
+          },
+          {
+            'idx': 3,
+            'sku-code': 'SKH-121',
+            'item': 'Sun Kacang Hijau 100gr',
+            'promo': 'Promo MERDEKA 5%',
+            'price': '100.000',
+            'qty': 1,
+            'diskon': '5.000',
+            'subtotal': '95.000'
+          },
+          {
+            'idx': 3,
+            'sku-code': 'SKH-121',
+            'item': 'Sun Kacang Hijau 100gr',
+            'promo': 'Promo MERDEKA 5%',
+            'price': '100.000',
+            'qty': 1,
+            'diskon': '5.000',
+            'subtotal': '95.000'
+          },
+          {
+            'idx': 3,
+            'sku-code': 'SKH-121',
+            'item': 'Sun Kacang Hijau 100gr',
+            'promo': 'Promo MERDEKA 5%',
+            'price': '100.000',
+            'qty': 1,
+            'diskon': '5.000',
+            'subtotal': '95.000'
+          }
+        ],
       ],
+      activeTab: 1,
     }
   }
 }
@@ -362,56 +504,48 @@ export default {
 .body {
   background-color: #EBEFF4;
   height: 100vh;
-  padding: 6rem 3rem 2rem 3rem;
+  padding: 10vh 3vw 6vh 3vw;
   z-index: 1;
 }
 .body .left-card {
   background-color: white;
-  padding: 1.5rem;
+  padding: 0.75rem 1.5rem 0.75rem 1.5rem;
 }
-
 .body .left-card .card-title {
   font-weight: 600;
   font-style: italic;
-  font-size: 18px;
+  font-size: 16px;
 }
-
 .body .right-card {
   background-color: white;
   padding: 1.5rem;
 }
-
 .body .right-card .card-title {
   font-size: 14px;
   font-weight: 600;
   font-style: italic;
 }
-
 .body .right-card .detail-name {
   font-weight: 400;
   font-size: 14px;
   color: #202020;
   opacity: 50%;
 }
-
 .body .right-card .detail-value {
   font-weight: 400;
   font-size: 14px;
   margin-left: auto;
 }
-
 .body .right-card .total-name {
   font-weight: 400;
   font-size: 14px;
 }
-
 .body .right-card .total-value {
   font-weight: 700;
   font-size: 20px;
   margin-left: auto;
   color: #079FB7;
 }
-
 .body .right-card .checkout-btn {
   width: 100%;
   border: none;
@@ -421,58 +555,47 @@ export default {
   border-radius: 6px;
   margin-top: 14px;
 }
-
 .body .modal .modal-body {
   margin: 0.5rem 1rem;
 }
-
 .body .modal .my-modal-title {
   font-size: 16px;
   font-weight: 600;
 }
-
 .body .modal .nama-kasir {
   font-size: 12px;
   font-weight: 600;
 }
-
 .body .modal .cashier {
   color: grey;
   font-size: 10px;
 }
-
 .body .description-name {
   font-size: 14px;
   color: rgba(0, 0, 0, 0.5);
 }
-
 .body .description-value {
   font-size: 14px;
   color: black;
 }
-
 .body .modal .table th {
   background: white;
   color: black;
   font-weight: 600;
 }
-
 .body .modal .table .qty {
   border: none;
   text-align: left;
 }
-
 .body .ringkasan-order {
   font-size: 12px;
 }
-
 .total-checkout {
   font-size: 16px;
   font-weight: 700;
   color: #079FB7;
   font-style: italic;
 }
-
 .border-button {
   border: 1px solid #079FB7;
   background: white;
@@ -481,7 +604,6 @@ export default {
   border-radius: 4px;
   padding: 6px;
 }
-
 .fill-button {
   border: none;
   background: #079FB7;
