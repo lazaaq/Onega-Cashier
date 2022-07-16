@@ -1,5 +1,9 @@
 <template>
   <button class="simple-button">
+    <img
+      v-if="srcImage != null" 
+      :src="srcImage"
+    >
     <div class="ms-1">
       {{ text }}
     </div>
@@ -11,6 +15,7 @@ export default {
   name: "SimpleButton",
   props: [
     'text',
+    'srcImage'
   ],
 }
 </script>
@@ -27,5 +32,8 @@ button.simple-button {
   color: #079FB7;
   border-radius: 4px;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+img {
+  margin-right: 4px;
 }
 </style>

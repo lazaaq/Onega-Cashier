@@ -31,17 +31,24 @@
               <TextField placeholder="Input or Scan items" name="scan" id="scan"/>
             </div>
           </div>
-          <ListTable :thead="thead" :tbody="tbody[activeTab-1]" :trashIcon="trashIcon"/>
+          <ListTable
+            :thead="thead"
+            :tbody="tbody[activeTab-1]"
+            :trashIcon="trashIcon"
+            @deleteItem="deleteItem($event)"
+          />
           <div class="d-flex">
             <div>
               <SimpleButton
                 :text="'Add On Item'"
+                :srcImage="plusIcon"
                 @click="addOnItem()"
               />
             </div>
             <div style="margin-left:auto">
               <SimpleButton
                 text="Delete All"
+                :srcImage="deleteIcon"
                 @click="deleteAll()"
                 style="color:red"
               />
@@ -357,11 +364,16 @@ export default {
     },
     deleteAll: function () {
       this.tbody[this.activeTab-1] = []
+    },
+    deleteItem: function(index) {
+      this.tbody[this.activeTab-1].splice(index, 1)
     }
   },
   data() {
     return {
       trashIcon: require('@/assets/icon/trash.png'),
+      plusIcon: require('@/assets/icon/plus.png'),
+      deleteIcon: require('@/assets/icon/delete-red.png'),
       thead: [
         'SKU Code',
         'Item',
@@ -374,7 +386,7 @@ export default {
         [
           {
             'idx': 1,
-            'sku-code': 'SKH-121',
+            'sku-code': 'SKH-1',
             'item': 'Sun Kacang Hijau 100gr',
             'promo': 'Promo MERDEKA 5%',
             'price': '100.000',
@@ -384,7 +396,7 @@ export default {
           },
           {
             'idx': 2,
-            'sku-code': 'SKH-121',
+            'sku-code': 'SKH-2',
             'item': 'Sun Kacang Hijau 100gr',
             'promo': 'Promo MERDEKA 5%',
             'price': '100.000',

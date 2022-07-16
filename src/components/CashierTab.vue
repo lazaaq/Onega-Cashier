@@ -4,7 +4,7 @@
       <button @click="updateActiveTab(index)" class="tab">Tab {{ index + 1 }}</button>
       <button type="button" class="x-button ml-2" @click="closeTab(index)"><img src="@/assets/icon/delete-black.png" alt="" style="width: 7px;"></button>
     </div>
-    <div class="d-flex align-items-center px-2"><button class="plus-button" @click="addTab()">+</button></div>
+    <div class="d-flex align-items-center px-2" v-if="plusButton"><button class="plus-button" @click="addTab()">+</button></div>
   </div>
 </template>
 
@@ -17,12 +17,18 @@ export default {
   methods: {
     addTab: function() {
       this.tabs += 1;
+      if (this.tabs >= 15) {
+        this.plusButton = false
+      }
       this.$emit('addtab', this.tabs);
     },
     updateActiveTab: function (index) {
       this.$emit('changetab', index+1);
     },
     closeTab: function (index) {
+      if (this.tabs == 15) {
+        this.plusButton = true
+      }
       this.tabs -= 1;
       this.$emit('closetab', index);
     }
@@ -30,6 +36,7 @@ export default {
   data() {
     return {
       tabs: 1,
+      plusButton: true,
     }
   }
 }

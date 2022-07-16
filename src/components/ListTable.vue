@@ -20,8 +20,8 @@
         </td>
         <td class="d-flex align-items-center">
           <div class="me-2">{{ val['subtotal'] }}</div> 
-          <button class="trash-btn" @click="tes">
-            <img :src="trashIcon" alt="Trash Button" width="80%">
+          <button class="trash-btn" @click="deleteItem(index)">
+            <img :src="trashIcon">
           </button>
         </td>
       </tr>
@@ -38,15 +38,10 @@ export default {
     'trashIcon'
   ],
   methods: {
-    tes() {
-      console.log(this.trashIcon)
+    deleteItem: function (index) {
+      this.$emit('deleteItem', index)
     }
   },
-  data() {
-    return {
-      
-    }
-  }
 }
 </script>
 
@@ -55,7 +50,6 @@ export default {
   font-size: 11px;
   margin-bottom: 0.5vh;
 }
-
 .table th {
   font-weight: 400;
   background-color: #079FB7;
@@ -98,5 +92,10 @@ export default {
   padding: 0;
   color: red;
   display: block;
+}
+
+.trash-btn img{
+  width: 10px;
+  margin-left: 4px;
 }
 </style>
