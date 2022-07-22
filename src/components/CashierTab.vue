@@ -2,7 +2,9 @@
   <div class="wrap-tabs d-flex">
     <div v-for="(val, index) in tabs" :key="index" class="wrap-tab" :class="index+1 == activeTab ? 'active' : ''">
       <button @click="updateActiveTab(index)" class="tab">Tab {{ index + 1 }}</button>
-      <button type="button" class="x-button ml-2" @click="closeTab(index)"><img src="@/assets/icon/delete-black.png" alt="" style="width: 7px;"></button>
+      <button type="button" class="x-button ms-1" @click="closeTab(index)" v-if="tabs > 1">
+        <img src="@/assets/icon/delete-black.png" style="width: 7px;">
+      </button>
     </div>
     <div class="d-flex align-items-center px-2" v-if="plusButton"><button class="plus-button" @click="addTab()">+</button></div>
   </div>
