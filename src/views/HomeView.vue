@@ -33,10 +33,11 @@
           </div>
           <ListTable
             :thead="thead"
-            :tbody="tbody[activeTab-1]"
+            :items="tbody[activeTab-1].items"
             :trashIcon="trashIcon"
             @deleteItem="deleteItem($event)"
             @changeQty="changeQty($event)"
+            @addNewItem="addNewItem($event)"
           />
           <div class="d-flex">
             <div>
@@ -91,21 +92,21 @@
           </div>
           <hr class="my-2">
           <div class="d-flex">
-            <div class="total-name">
+            <div class="total-n ame"> 
               Total
             </div>
             <div class="total-value">
               Rp603.000
             </div>
           </div>
-          <button class="checkout-btn" type="button" data-bs-toggle="modal" data-bs-target="#idCheckoutModal">
+          <button class="checkout-btn" type="button" data-bs-toggle="modal" :data-bs-target="'#' + idCheckoutModal">
             Checkout
           </button>
         </div>
         <CheckoutModal 
           :idModal="idCheckoutModal"
           :thead="thead"
-          :tbody="tbody[activeTab-1]"
+          :tbody="tbody[activeTab-1].items"
           :trashIcon="trashIcon"
         />
       </div>
@@ -114,6 +115,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 // @ is an alias to /src
 import MyNavbar from '@/components/MyNavbar.vue'
 import TextField from '@/components/form/TextField.vue'
@@ -134,55 +136,86 @@ export default {
     CashierTab,
     CheckoutModal
 },
-  mounted() {
+  async mounted() {
     let bootstrapJS = document.createElement('script')
     bootstrapJS.setAttribute('src', 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js')
     document.head.appendChild(bootstrapJS)
+
+    let cart = null
+    await axios.get(this.$host + '/carts/1').then(response => {
+      cart = response.data.data
+      this.tbody[0].cartId = cart.id
+    }).catch(error => {
+      console.log(error)
+    })
   },
   methods: {
     updateActiveTab: function (newActiveTab) {
       this.activeTab = newActiveTab
     },
-    addTab: function (tabs) {
-      this.tbody.push([])
+    addTab: async function (tabs) {
+      const todayDate = new Date().toISOString().slice(0, 10);
+      let newCart = {
+        id: null,
+        customer_id: null,
+        cart_date: todayDate,
+        subtotal: 0,
+        discount: 0,
+        tax: 0,
+        total_price: 0,
+        notes: 'notes',
+        items: [],
+      }
+      this.tbody.push(newCart)
       this.activeTab = tabs
+      console.log(this.tbody)
     },
     closeTab: function (index) {
       if (index + 1 <= this.activeTab) {
         this.activeTab -= 1
       }
       this.tbody.splice(index, 1)
-      console.log(this.tbody)
-      console.log(index)
-      console.log(this.activeTab)
     },
     addOnItem: function () {
-      let newItem = {
-        'sku-code': '',
-        'item': '',
-        'promo': 'Promo MERDEKA 5%',
-        'price': '',
-        'qty': 1,
-        'diskon': '0',
-        'subtotal': 0
+      // create new cart item data
+      const newItem = {
+        product: {
+          skuCode: '',
+          productName: '',
+          description: '',
+          unitPrice: 0,
+        },
+        discount: 0,
+        price: 0,
+        quantity: 0,
       }
-      this.tbody[this.activeTab - 1].push(newItem)
+      this.tbody[this.activeTab - 1].items.push(newItem)
+      console.log(this.tbody)
     },
     deleteAll: function () {
-      this.tbody[this.activeTab - 1] = []
+      this.tbody[this.activeTab - 1].cartId = 0
+      this.tbody[this.activeTab - 1].items = []
     },
     deleteItem: function (index) {
-      this.tbody[this.activeTab - 1].splice(index, 1)
+      this.tbody[this.activeTab - 1].items.splice(index, 1)
     },
-    changeQty: function (param) {
+    changeQty: function(param) {
       // change qty
-      let index = param[0]
-      let value = param[1]
-      this.tbody[this.activeTab - 1][index].qty = value
-
-      // change subtotal
-      this.tbody[this.activeTab - 1][index].subtotal = value * this.tbody[this.activeTab - 1][index].price
-      console.log(this.tbody[this.activeTab - 1][index])
+      let index = param.index
+      let value = param.value
+      this.tbody[this.activeTab - 1].items[index].quantity = value
+    },
+    addNewItem: function(param) {
+      let product = param.product
+      let index = param.index
+      console.log(product)
+      this.tbody[this.activeTab - 1].items[index].product = {
+        skuCode: product.sku_code,
+        productName: product.product_name,
+        description: product.description,
+        unitPrice: product.unit_price,
+      }
+      console.log('yey')
     }
   },
   data() {
@@ -200,24 +233,17 @@ export default {
         'Subtotal'
       ],
       tbody: [
-        [
-          {
-            'sku-code': 'SKH-1',
-            'item': 'Sun Kacang Hijau 100gr',
-            'promo': 'Promo MERDEKA 5%',
-            'price': 100000,
-            'qty': 1,
-            'diskon': '5.000',
-          },
-          {
-            'sku-code': 'SKH-2',
-            'item': 'Sun Kacang Hijau 100gr',
-            'promo': 'Promo MERDEKA 5%',
-            'price': 100000,
-            'qty': 1,
-            'diskon': '5.000',
-          }
-        ],
+        {
+          id: 0,
+          customer_id: 0,
+          cart_date: new Date().toISOString().slice(0, 10),
+          subtotal: 0,
+          discount: 0,
+          tax: 0,
+          total_price: 0,
+          notes: 'notes',
+          items: [],
+        }
       ],
       activeTab: 1,
     }

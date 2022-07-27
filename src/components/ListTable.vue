@@ -6,16 +6,53 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(val, index) in tbody" :key="index">
+      <tr v-for="(val, index) in items" :key="index">
         <td>
-          <span id="sku-code">{{ val['sku-code'] }}</span>
+          <div class="w-100">
+            <span 
+              class="input"
+              id="sku-code"
+              contenteditable
+              @keyup="openSearchSkuCode(index)"
+              >{{ val.product ? val.product.skuCode : 'kosong' }}
+            </span>
+          </div>
+          <div :id="'search_sku_' + index" class="search-item">
+            <ul>
+              <li 
+                v-for="(product, productIndex) in filteredProductsSku" 
+                :key="productIndex"
+                @click="addNewItem(product, index, 'skucode')"
+                >{{ product.sku_code }}
+              </li>
+            </ul>
+          </div>
         </td>
         <td>
-          <span class="input" role="textbox" contenteditable>{{ val['item'] }}</span>
-          <span class="item-promo">{{ val['promo'] }}</span>
+          <div class="w-100">
+            <span
+              class="input"
+              id="product-name"
+              role="textbox"
+              contenteditable
+              @keyup="openSearchProductName(index)"
+            > {{ val.product ? val.product.productName : 'kosong' }}
+            </span>
+            <span class="item-promo">Promo Merdeka 5%</span>
+          </div>
+          <div :id="'search_item_' + index" class="search-item">
+            <ul>
+              <li 
+                v-for="(product, productIndex) in filteredProductsItem" 
+                :key="productIndex"
+                @click="addNewItem(product, index, 'productname')"
+                >{{ product.product_name }}
+              </li>
+            </ul>
+          </div>
         </td>
         <td>
-          <span id="price">{{ val['price'] }}</span>
+          <span id="price">{{ val.price }}</span>
         </td>
         <td>
           <div class="qty-wrap">
@@ -25,17 +62,17 @@
               role="textbox" 
               contenteditable
               @keyup="changeQty(index)"
-            > {{ val['qty'] }}
+            > {{ val.quantity }}
             </span>
           </div>
         </td>
         <td>
           <div class="diskon">
-            {{ val['diskon'] }}
+            {{ val.discount }}
           </div>
         </td>
         <td class="d-flex align-items-center">
-          <span>{{ val['subtotal'] }}</span>
+          <span>{{ subtotalItem[index] }}</span>
           <button class="trash-btn" @click="deleteItem(index)">
             <img :src="trashIcon">
           </button>
@@ -46,6 +83,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import jQuery from "jquery";
 const $ = jQuery;
 window.$ = $;
@@ -54,49 +92,102 @@ export default {
   name: 'ListTable',
   props: [
     'thead',
-    'tbody',
+    'items',
     'trashIcon'
   ],
+  computed: {
+    subtotalItem() {
+      let subtotal = [];
+      this.items.forEach(item => {
+        subtotal.push(item.price * item.quantity);
+      });
+      return subtotal;
+    },
+    filteredProductsSku() {
+      let query = this.searchProduct.toLowerCase()
+      if (this.searchProduct == '') {
+        return this.products
+      }
+      return this.products.filter(function(el) {
+        return el.sku_code.toLowerCase().includes(query)
+      });
+    },
+    filteredProductsItem() {
+      let query = this.searchProduct.toLowerCase()
+      if (this.searchProduct == '') {
+        return this.products
+      }
+      return this.products.filter(function(el) {
+        return el.product_name.toLowerCase().includes(query)
+      });
+    }
+  },
   methods: {
     deleteItem: function (index) {
       this.$emit('deleteItem', index)
     },
     changeQty: function (index) {
       let value = parseInt($('#qty_' + index).text())
-      this.$emit('changeQty', [index, value])
+      this.$emit('changeQty', {index, value})
     },
+    openSearchSkuCode: function (index) {
+      let searchElement = document.getElementById("search_sku_" + index)
+      searchElement.style.display = "block"
+      this.searchProduct = $('#sku-code').text()
+    },
+    openSearchProductName: function (index) {
+      let searchElement = document.getElementById("search_item_" + index)
+      searchElement.style.display = "block"
+      this.searchProduct = $('#product-name').text()
+    },
+    addNewItem: function (product, index, inputtype) {
+      if (inputtype == 'skucode') {
+        $('#sku-code').text(product.sku_code)
+      } else {
+        $('#product-name').text(product.product_name)
+      }
+      this.$emit('addNewItem', {product, index})
+    }
   },
-  mounted() {
-    // $('[contenteditable]').on('keyup', function () {
-      // console.log(this.innerText)
-      // let qtyId = this.id;
-      // let index = qtyId.split('_')[1];
-      // index = parseInt(index);
-      // this.tbody[index]['subtotal'] = parseInt(this.innerText) * parseInt(this.tbody[index]['price']);
-    // })
+  async mounted() {
+    await axios.get(this.$host + '/products').then(response => {
+      this.products = response.data.data
+    }).catch(error => {
+      console.log(error)
+    })
+    console.log(this.products)
+
+    window.onclick = function(event) {
+      if (event.target.class != 'search-item') {
+        document.querySelectorAll(".search-item").forEach(
+          a => a.style.display = "none"
+        );
+      }
+    }
+  },
+  data() {
+    return {
+      products: null,
+      searchProduct: '',
+    }
   }
 }
 </script>
 
-<style scoped>
+<style>
 .table {
   font-size: 11px;
   margin-bottom: 0.5vh;
 }
 .table th {
   font-weight: 400;
-  background-color: #079FB7;
+  background: #079FB7!important;
   color: white;
   padding: 1vh 1vw;
 }
 .table td {
   padding: 0.75vh 1vw;
 }
-.table input {
-  border: none;
-  width: auto;
-}
-
 .table .item-promo {
   background: #EBEFF4;
   border-radius: 4px;
@@ -104,14 +195,36 @@ export default {
   font-weight: 700;
   padding: 4px 6px;
 }
-
+.table .search-item {
+  display: none;
+  position: absolute;
+  background-color: white;
+  border: 1px solid grey;
+  border-radius: 6px;
+}
+.table .search-item ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.table .search-item ul li {
+  border: none;
+  background-color: white;
+  width: 100%;
+  text-align: left;
+  padding: 0.5vh 1vw;
+  margin: 0;
+  cursor: pointer;
+}
+.table .search-item ul li:hover {
+  background-color: rgba(0,0,0,0.2);
+}
 .table .qty-wrap {
   padding: 0!important;
   border-bottom: 1px solid rgba(0,0,0,0.3);
   text-align: center;
   margin: 0;
 }
-
 .table .diskon {
   background: #3BB06A;
   width: fit-content;
@@ -122,7 +235,6 @@ export default {
   display: flex;
   align-items: center;
 }
-
 .table .trash-btn {
   border: none;
   background: none;
@@ -130,7 +242,6 @@ export default {
   color: red;
   display: block;
 }
-
 .trash-btn img{
   width: 10px;
   margin-left: 4px;
