@@ -117,7 +117,10 @@
 
 <script>
 import axios from 'axios'
-// @ is an alias to /src
+import jQuery from "jquery";
+const $ = jQuery;
+window.$ = $;
+
 import MyNavbar from '@/components/MyNavbar.vue'
 import TextField from '@/components/form/TextField.vue'
 import ButtonField from '@/components/form/ButtonField.vue'
@@ -204,19 +207,53 @@ export default {
       let product = param.product
       let index = param.index
       this.tbody[this.activeTab - 1].items[index].product = {
+        id: product.id,
         skuCode: product.sku_code,
         productName: product.product_name,
         description: product.description,
         unitPrice: product.unit_price,
         discount: {
+          id: product.discount ? product.discount.id : 0,
           name: product.discount ? product.discount.name : '',
           discountAmount: product.discount ? product.discount.discount_amount : 0,
         }
       }
       console.log(this.tbody[this.activeTab - 1].items[index].product)
     },
-    print: function (param) {
-      console.log(param)
+    print: async function (param) {
+      let notes = param.notes
+      let ppn = param.ppn
+      let subtotalItems = param.subtotalItems
+      let subtotalOrder = param.subtotalOrder
+      let totalOrder = param.totalOrder
+
+      // store to make_invoice 
+      let items = []
+      let i = 0
+      this.tbody[this.activeTab - 1].items.forEach(item => {
+        console.log(item)
+        items.push({
+          product_id: item.product ? item.product.id : 0,
+          quantity: item.quantity,
+          subtotal: subtotalItems[i],
+        })
+        i += 1
+      })
+      let invoice = {
+        customer_id: 1,
+        subtotal: subtotalOrder,
+        discount: 0,
+        tax: ppn,
+        total_price: totalOrder,
+        notes: notes,
+        items: items,
+      }
+      console.log(invoice)
+      await axios.post(this.$host + '/invoices/make_invoice', invoice).then(response => {
+        console.log(response.data)
+      }).catch(error => {
+        console.log(error)
+      })
     }
   },
   data() {

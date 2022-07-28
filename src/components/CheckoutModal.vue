@@ -49,13 +49,13 @@
                 <tr v-for="(val, index) in items" :key="index">
                   <td>{{ val.product ? val.product.skuCode : '' }}</td>
                   <td>{{ val.product ? val.product.productName : '' }} <span class="item-promo">Promo Merdeka 5%</span></td>
-                  <td>{{ val.price }}</td>
+                  <td>{{ val.product ? val.product.unitPrice : 0 }}</td>
                   <td>
                     <div class="qty">{{ val.quantity }}</div>
                   </td>
                   <td>
                     <div class="diskon">
-                      {{ val.discount }}
+                      {{ val.product ? (val.product.discount ? val.product.discount.discountAmount : 0) : 0 }}
                     </div>
                   </td>
                   <td class="d-flex">
@@ -162,7 +162,7 @@ export default {
     subtotalItems() {
       let subtotalItems = []
       this.items.forEach(item => {
-        let subtotalItem = item.price * item.quantity
+        let subtotalItem = item.product.unitPrice * item.quantity
         subtotalItems.push(subtotalItem)
       })
       return subtotalItems
