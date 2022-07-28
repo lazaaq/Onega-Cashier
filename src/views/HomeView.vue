@@ -92,7 +92,7 @@
           </div>
           <hr class="my-2">
           <div class="d-flex">
-            <div class="total-n ame"> 
+            <div class="total-name"> 
               Total
             </div>
             <div class="total-value">
@@ -106,8 +106,9 @@
         <CheckoutModal 
           :idModal="idCheckoutModal"
           :thead="thead"
-          :tbody="tbody[activeTab-1].items"
+          :items="tbody[activeTab-1].items"
           :trashIcon="trashIcon"
+          @print="print($event)"
         />
       </div>
     </div>
@@ -142,9 +143,10 @@ export default {
     document.head.appendChild(bootstrapJS)
 
     let cart = null
-    await axios.get(this.$host + '/carts/1').then(response => {
+    this.tbody[0].id = 1
+    await axios.get(this.$host + '/carts/' + this.tbody[0].id).then(response => {
       cart = response.data.data
-      this.tbody[0].cartId = cart.id
+      console.log(cart)
     }).catch(error => {
       console.log(error)
     })
@@ -179,18 +181,10 @@ export default {
     addOnItem: function () {
       // create new cart item data
       const newItem = {
-        product: {
-          skuCode: '',
-          productName: '',
-          description: '',
-          unitPrice: 0,
-        },
-        discount: 0,
-        price: 0,
-        quantity: 0,
+        product: {},
+        quantity: 1,
       }
       this.tbody[this.activeTab - 1].items.push(newItem)
-      console.log(this.tbody)
     },
     deleteAll: function () {
       this.tbody[this.activeTab - 1].cartId = 0
@@ -206,16 +200,23 @@ export default {
       this.tbody[this.activeTab - 1].items[index].quantity = value
     },
     addNewItem: function(param) {
+      // console.log(param)
       let product = param.product
       let index = param.index
-      console.log(product)
       this.tbody[this.activeTab - 1].items[index].product = {
         skuCode: product.sku_code,
         productName: product.product_name,
         description: product.description,
         unitPrice: product.unit_price,
+        discount: {
+          name: product.discount ? product.discount.name : '',
+          discountAmount: product.discount ? product.discount.discount_amount : 0,
+        }
       }
-      console.log('yey')
+      console.log(this.tbody[this.activeTab - 1].items[index].product)
+    },
+    print: function (param) {
+      console.log(param)
     }
   },
   data() {

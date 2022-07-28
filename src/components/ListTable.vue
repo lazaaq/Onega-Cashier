@@ -14,7 +14,7 @@
               id="sku-code"
               contenteditable
               @keyup="openSearchSkuCode(index)"
-              >{{ val.product ? val.product.skuCode : 'kosong' }}
+              >{{ val.product ? val.product.skuCode : '' }}
             </span>
           </div>
           <div :id="'search_sku_' + index" class="search-item">
@@ -36,7 +36,7 @@
               role="textbox"
               contenteditable
               @keyup="openSearchProductName(index)"
-            > {{ val.product ? val.product.productName : 'kosong' }}
+            > {{ val.product ? val.product.productName : '' }}
             </span>
             <span class="item-promo">Promo Merdeka 5%</span>
           </div>
@@ -52,7 +52,7 @@
           </div>
         </td>
         <td>
-          <span id="price">{{ val.price }}</span>
+          <span id="price">{{ val.product ? val.product.unitPrice : '' }}</span>
         </td>
         <td>
           <div class="qty-wrap">
@@ -68,7 +68,7 @@
         </td>
         <td>
           <div class="diskon">
-            {{ val.discount }}
+            {{ val.product ? (val.product.discount ? val.product.discount.discountAmount : 0) : 0 }}
           </div>
         </td>
         <td class="d-flex align-items-center">
@@ -99,8 +99,9 @@ export default {
     subtotalItem() {
       let subtotal = [];
       this.items.forEach(item => {
-        subtotal.push(item.price * item.quantity);
+        subtotal.push(item.product.unitPrice * item.quantity);
       });
+      console.log(subtotal)
       return subtotal;
     },
     filteredProductsSku() {
@@ -155,7 +156,6 @@ export default {
     }).catch(error => {
       console.log(error)
     })
-    console.log(this.products)
 
     window.onclick = function(event) {
       if (event.target.class != 'search-item') {

@@ -46,20 +46,20 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(val, index) in tbody" :key="index">
-                  <td>{{ val['sku-code'] }}</td>
-                  <td>{{ val['item'] }} <span class="item-promo">{{ val['promo'] }}</span></td>
-                  <td>{{ val['price'] }}</td>
+                <tr v-for="(val, index) in items" :key="index">
+                  <td>{{ val.product ? val.product.skuCode : '' }}</td>
+                  <td>{{ val.product ? val.product.productName : '' }} <span class="item-promo">Promo Merdeka 5%</span></td>
+                  <td>{{ val.price }}</td>
                   <td>
-                    <div class="qty">{{ val['qty'] }}</div>
+                    <div class="qty">{{ val.quantity }}</div>
                   </td>
                   <td>
                     <div class="diskon">
-                      {{ val['diskon'] }}
+                      {{ val.discount }}
                     </div>
                   </td>
                   <td class="d-flex">
-                    <div class="">{{ val['subtotal'] }}</div>
+                    <div class="">{{ subtotalItems[index] }}</div>
                   </td>
                 </tr>
               </tbody>
@@ -74,7 +74,7 @@
                     Subtotal
                   </td>
                   <td class="text-end">
-                    Rp125.000
+                    Rp{{ subtotalOrder }}
                   </td>
                 </tr>
                 <tr class="">
@@ -90,7 +90,7 @@
                     PPN 11%
                   </td>
                   <td class="text-end">
-                    Rp12.500
+                    Rp{{ ppn }}
                   </td>
                 </tr>
                 <tr class="total-checkout">
@@ -98,7 +98,7 @@
                     Total
                   </td>
                   <td class="text-end">
-                    Rp137.500
+                    Rp{{ totalOrder }}
                   </td>
                 </tr>
               </table>
@@ -110,7 +110,12 @@
               Notes / Terms
             </div>
             <div class="input-notes mt-1">
-              <input type="text" name="notes" id="notes" placeholder="Enter notes or terms of service that are visible to your customer">
+              <input 
+                type="text" 
+                name="notes" 
+                id="notes" 
+                v-model="notes"
+                placeholder="Enter notes or terms of service that are visible to your customer">
             </div>
           </div>
           <hr class="mt-1 mb-2">
@@ -122,7 +127,7 @@
               </button>
             </div>
             <div>
-              <button type="button" class="fill-button">
+              <button type="button" class="fill-button" @click="print()">
                 <img src="@/assets/icon/print.png" alt="" width="12px">
                 <span>Print</span>
               </button>
@@ -137,11 +142,56 @@
 <script>
 export default {
   name: 'CheckoutModal',
+  methods: {
+    print: function() {
+      if(this.items.length == 0) {
+        alert('item masih kosong!')
+        return
+      }
+      let data = {
+        subtotalItems: this.subtotalItems,
+        subtotalOrder: this.subtotalOrder,
+        ppn: this.ppn,
+        totalOrder: this.totalOrder,
+        notes: this.notes,
+      }
+      this.$emit('print', data)
+    }
+  },
+  computed: {
+    subtotalItems() {
+      let subtotalItems = []
+      this.items.forEach(item => {
+        let subtotalItem = item.price * item.quantity
+        subtotalItems.push(subtotalItem)
+      })
+      return subtotalItems
+    },
+    subtotalOrder() {
+      let subtotalOrder = 0
+      this.subtotalItems.forEach(item => {
+        subtotalOrder += item
+      })
+      return subtotalOrder
+    },
+    ppn() {
+      return this.subtotalOrder * 0.11
+    },
+    totalOrder() {
+      return this.subtotalOrder + this.ppn - this.discount
+    }
+  },
   props: [
     'idModal',
     'thead',
-    'tbody'
+    'items'
   ],
+  data() {
+    return {
+      discount: 0,
+      notes: ''
+    }
+  }
 }
 </script>
 
