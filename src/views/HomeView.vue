@@ -142,7 +142,7 @@ export default {
 },
   async mounted() {
     let bootstrapJS = document.createElement('script')
-    bootstrapJS.setAttribute('src', 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js')
+    bootstrapJS.setAttribute('src', 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js')
     document.head.appendChild(bootstrapJS)
 
     let cart = null
@@ -231,7 +231,6 @@ export default {
       let items = []
       let i = 0
       this.tbody[this.activeTab - 1].items.forEach(item => {
-        console.log(item)
         items.push({
           product_id: item.product ? item.product.id : 0,
           quantity: item.quantity,
@@ -248,9 +247,8 @@ export default {
         notes: notes,
         items: items,
       }
-      console.log(invoice)
-      await axios.post(this.$host + '/invoices/make_invoice', invoice).then(response => {
-        console.log(response.data)
+      await axios.post(this.$host + '/invoices/make_invoice', invoice).then(() => {
+        console.log('success make invoice')
       }).catch(error => {
         console.log(error)
       })

@@ -127,7 +127,12 @@
               </button>
             </div>
             <div>
-              <button type="button" class="fill-button" @click="print()">
+              <button 
+                type="button"
+                class="fill-button"
+                @click="print()"
+                data-bs-dismiss="modal"
+              >
                 <img src="@/assets/icon/print.png" alt="" width="12px">
                 <span>Print</span>
               </button>
@@ -140,6 +145,10 @@
 </template>
 
 <script>
+import jQuery from "jquery";
+const $ = jQuery;
+window.$ = $;
+
 export default {
   name: 'CheckoutModal',
   methods: {
