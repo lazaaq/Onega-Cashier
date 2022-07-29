@@ -69,7 +69,7 @@
               Subtotal
             </div>
             <div class="detail-value">
-              Rp630.000
+              Rp{{ detailOrder.subtotal }}
             </div>
           </div>
           <hr class="my-2">
@@ -78,7 +78,7 @@
               Discount
             </div>
             <div class="detail-value">
-              -Rp90.000
+              -Rp{{ detailOrder.discount }}
             </div>
           </div>
           <hr class="my-2">
@@ -87,7 +87,7 @@
               PPN 11%
             </div>
             <div class="detail-value">
-              Rp63.000
+              Rp{{ detailOrder.tax }}
             </div>
           </div>
           <hr class="my-2">
@@ -96,7 +96,7 @@
               Total
             </div>
             <div class="total-value">
-              Rp603.000
+              Rp{{ detailOrder.totalPrice }}
             </div>
           </div>
           <button class="checkout-btn" type="button" data-bs-toggle="modal" :data-bs-target="'#' + idCheckoutModal">
@@ -108,6 +108,8 @@
           :thead="thead"
           :items="tbody[activeTab-1].items"
           :trashIcon="trashIcon"
+          :detailOrder="detailOrder"
+          :subtotalItems="subtotalItems"
           @print="print($event)"
         />
       </div>
@@ -139,7 +141,7 @@ export default {
     SimpleButton,
     CashierTab,
     CheckoutModal
-},
+  },
   async mounted() {
     let bootstrapJS = document.createElement('script')
     bootstrapJS.setAttribute('src', 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js')
@@ -159,11 +161,9 @@ export default {
       this.activeTab = newActiveTab
     },
     addTab: async function (tabs) {
-      const todayDate = new Date().toISOString().slice(0, 10);
       let newCart = {
         id: null,
         customer_id: null,
-        cart_date: todayDate,
         subtotal: 0,
         discount: 0,
         tax: 0,
@@ -197,13 +197,12 @@ export default {
       this.tbody[this.activeTab - 1].items.splice(index, 1)
     },
     changeQty: function(param) {
-      // change qty
       let index = param.index
       let value = param.value
       this.tbody[this.activeTab - 1].items[index].quantity = value
+      console.log(this.tbody[this.activeTab - 1].items)
     },
     addNewItem: function(param) {
-      // console.log(param)
       let product = param.product
       let index = param.index
       this.tbody[this.activeTab - 1].items[index].product = {
@@ -218,15 +217,9 @@ export default {
           discountAmount: product.discount ? product.discount.discount_amount : 0,
         }
       }
-      console.log(this.tbody[this.activeTab - 1].items[index].product)
+      console.log(this.tbody[this.activeTab - 1].items)
     },
-    print: async function (param) {
-      let notes = param.notes
-      let ppn = param.ppn
-      let subtotalItems = param.subtotalItems
-      let subtotalOrder = param.subtotalOrder
-      let totalOrder = param.totalOrder
-
+    print: async function (notes) {
       // store to make_invoice 
       let items = []
       let i = 0
@@ -234,16 +227,16 @@ export default {
         items.push({
           product_id: item.product ? item.product.id : 0,
           quantity: item.quantity,
-          subtotal: subtotalItems[i],
+          subtotal: this.subtotalItems[i],
         })
         i += 1
       })
       let invoice = {
         customer_id: 1,
-        subtotal: subtotalOrder,
-        discount: 0,
-        tax: ppn,
-        total_price: totalOrder,
+        subtotal: this.detailOrder.subtotal,
+        discount: this.detailOrder.discount,
+        tax: this.detailOrder.tax,
+        total_price: this.detailOrder.totalPrice,
         notes: notes,
         items: items,
       }
@@ -252,6 +245,32 @@ export default {
       }).catch(error => {
         console.log(error)
       })
+    }
+  },
+  computed: {
+    detailOrder() {
+      let detailOrder = {
+        subtotal: 0,
+        discount: 0,
+        tax: 0,
+        totalPrice: 0,
+      }
+      let cartItems = this.tbody[this.activeTab - 1].items
+      cartItems.forEach(item => {
+        detailOrder.subtotal += item.quantity * (item.product ? item.product.unitPrice : 0)
+        detailOrder.discount += item.quantity * (item.product ? (item.product.discount ? item.product.discount.discountAmount : 0) : 0)
+      })
+      detailOrder.tax = detailOrder.subtotal * 0.11
+      detailOrder.totalPrice = detailOrder.subtotal - detailOrder.discount + detailOrder.tax
+      return detailOrder
+    },
+    subtotalItems() {
+      let subtotalItems = []
+      this.tbody[this.activeTab - 1].items.forEach(item => {
+        let subtotalItem = item.product.unitPrice * item.quantity
+        subtotalItems.push(subtotalItem)
+      })
+      return subtotalItems
     }
   },
   data() {
@@ -272,11 +291,6 @@ export default {
         {
           id: 0,
           customer_id: 0,
-          cart_date: new Date().toISOString().slice(0, 10),
-          subtotal: 0,
-          discount: 0,
-          tax: 0,
-          total_price: 0,
           notes: 'notes',
           items: [],
         }

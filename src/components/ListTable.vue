@@ -101,7 +101,6 @@ export default {
       this.items.forEach(item => {
         subtotal.push(item.product.unitPrice * item.quantity);
       });
-      console.log(subtotal)
       return subtotal;
     },
     filteredProductsSku() {

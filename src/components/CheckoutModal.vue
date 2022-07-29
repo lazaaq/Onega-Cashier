@@ -90,7 +90,7 @@
                     PPN 11%
                   </td>
                   <td class="text-end">
-                    Rp{{ ppn }}
+                    Rp{{ tax }}
                   </td>
                 </tr>
                 <tr class="total-checkout">
@@ -98,7 +98,7 @@
                     Total
                   </td>
                   <td class="text-end">
-                    Rp{{ totalOrder }}
+                    Rp{{ totalPrice }}
                   </td>
                 </tr>
               </table>
@@ -157,48 +157,33 @@ export default {
         alert('item masih kosong!')
         return
       }
-      let data = {
-        subtotalItems: this.subtotalItems,
-        subtotalOrder: this.subtotalOrder,
-        ppn: this.ppn,
-        totalOrder: this.totalOrder,
-        notes: this.notes,
-      }
-      this.$emit('print', data)
+      this.$emit('print', this.notes)
     }
   },
   computed: {
-    subtotalItems() {
-      let subtotalItems = []
-      this.items.forEach(item => {
-        let subtotalItem = item.product.unitPrice * item.quantity
-        subtotalItems.push(subtotalItem)
-      })
-      return subtotalItems
-    },
     subtotalOrder() {
-      let subtotalOrder = 0
-      this.subtotalItems.forEach(item => {
-        subtotalOrder += item
-      })
-      return subtotalOrder
+      return this.detailOrder.subtotal
     },
-    ppn() {
-      return this.subtotalOrder * 0.11
+    discount() {
+      return this.detailOrder.discount
     },
-    totalOrder() {
-      return this.subtotalOrder + this.ppn - this.discount
-    }
+    tax() {
+      return this.detailOrder.tax
+    },
+    totalPrice() {
+      return this.detailOrder.totalPrice
+    },
   },
   props: [
     'idModal',
     'thead',
-    'items'
+    'items',
+    'detailOrder',
+    'subtotalItems'
   ],
   data() {
     return {
-      discount: 0,
-      notes: ''
+      notes: '',
     }
   }
 }
