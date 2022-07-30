@@ -1,10 +1,22 @@
 <template>
   <div class="textfield" style="width: 100%">
-    <input type="text" :name="name" :id="id" style="width: 100%;" :placeholder="placeholder" />
+    <input 
+      type="text" 
+      :name="name" 
+      :id="id" 
+      style="width: 100%;" 
+      :placeholder="placeholder" 
+      @focus="focusInput()"
+      @keyup="keyupInput()"
+    />
   </div>
 </template>
 
 <script>
+import jQuery from "jquery";
+const $ = jQuery;
+window.$ = $;
+
 export default {
   name: "TextField",
   props: [
@@ -12,7 +24,20 @@ export default {
     'name',
     'id',
     'disabled'
-  ]
+  ],
+  methods: {
+    focusInput() {
+      this.$emit('focus');
+    },
+    keyupInput() {
+      this.$emit('keyup');
+    } 
+  },
+  data() {
+    return {
+      
+    }
+  }
 }
 </script>
 

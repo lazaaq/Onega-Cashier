@@ -16,10 +16,43 @@
           </div>
           <div class="d-flex w-100">
             <div class="pr-2" style="width: 90%;">
-              <TextField name="search" id="search" placeholder="Nama, Nomor, ID" />
+              <div>
+                <TextField 
+                  name="search" 
+                  id="search" 
+                  placeholder="Nama, Nomor, ID" 
+                  @focus="focusInput()"
+                  @keyup="keyupSearchCustomer('search')"  
+                />
+              </div>
+              <div class="search-customer" id="search-customer">
+                <ul>
+                  <li 
+                    class="py-1"
+                    v-for="(customer, index) in filteredCustomersData"
+                    :key="'customer_' + index"
+                    @click="selectCustomer(customer)"
+                  >
+                    <div class="d-flex align-items-center">
+                      <div class="customer-name me-5">
+                        {{ customer.name }}
+                      </div>
+                      <div class="ms-auto customer-code">
+                        code : {{ customer.code }}
+                      </div>
+                    </div>
+                    <div class="customer-id">
+                      id : {{ customer.id }}
+                    </div>
+                  </li>
+                </ul>
+              </div>
             </div>
             <div class="" style="width: 10%;">
-              <ButtonField text='Cari'/>
+              <ButtonField 
+                text='Cari'
+                @click="searchCustomer()"
+              />
             </div>
           </div>
           <hr class="my-2">
@@ -28,7 +61,11 @@
               List Order
             </div>
             <div class="scan-wrap" style="margin-left:auto">
-              <TextField placeholder="Input or Scan items" name="scan" id="scan"/>
+              <TextField 
+                placeholder="Input or Scan items" 
+                name="scan" 
+                id="scan"
+              />
             </div>
           </div>
           <ListTable
@@ -148,6 +185,7 @@ export default {
     bootstrapJS.setAttribute('src', 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js')
     document.head.appendChild(bootstrapJS)
 
+    // get card initial data from server (probably delete soon)
     let cart = null
     this.tbody[0].id = 1
     await axios.get(this.$host + '/carts/' + this.tbody[0].id).then(response => {
@@ -176,6 +214,22 @@ export default {
     }).catch(error => {
       console.log(error)
     })
+
+    // get customers data
+    await axios.get(this.$host + '/customers').then(response => {
+      this.customersData = response.data.data
+    }).catch(error => {
+      console.log(error)
+    })
+
+    // jquery
+    window.onclick = function() {
+      if (document.getElementById('search') != document.activeElement) {
+        document.querySelectorAll(".search-customer").forEach(
+          a => a.style.display = "none"
+        );
+      }
+    }
   },
   methods: {
     updateActiveTab: function (newActiveTab) {
@@ -288,7 +342,23 @@ export default {
     
       rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah
       return rupiah ? 'Rp' + rupiah : 'Rp0'
-    }
+    },
+    focusInput: function () {
+      document.getElementById('search-customer').style.display = 'block'
+    },
+    focusoutInput: function () {
+      document.getElementById('search-customer').style.display = 'none'
+    },
+    keyupSearchCustomer: function (id) {
+      this.searchCustomerQuery = $('#' + id).val()
+      console.log(this.searchCustomerQuery)
+    },
+    selectCustomer: function (customer) {
+      this.selectedCustomer = customer
+    },
+    searchCustomer: function () {
+      console.log('search')
+    },
   },
   computed: {
     detailOrder() {
@@ -314,14 +384,19 @@ export default {
         subtotalItems.push(subtotalItem)
       })
       return subtotalItems
-    }
+    },
+    filteredCustomersData() {
+      let query = this.searchCustomerQuery.toLowerCase()
+      if (this.searchCustomerQuery == '') {
+        return this.customersData
+      }
+      return this.customersData.filter(function(el) {
+        return el.name.toLowerCase().includes(query)
+      });
+    },
   },
   data() {
     return {
-      trashIcon: require('@/assets/icon/trash.png'),
-      plusIcon: require('@/assets/icon/plus.png'),
-      deleteIcon: require('@/assets/icon/delete-red.png'),
-      idCheckoutModal: 'idCheckoutModal',
       thead: [
         'SKU Code',
         'Item',
@@ -339,6 +414,13 @@ export default {
         }
       ],
       activeTab: 1,
+      idCheckoutModal: 'idCheckoutModal',
+      searchCustomerQuery: '',
+      customersData: [],
+      selectedCustomer: null,
+      trashIcon: require('@/assets/icon/trash.png'),
+      plusIcon: require('@/assets/icon/plus.png'),
+      deleteIcon: require('@/assets/icon/delete-red.png'),
     }
   }
 }
@@ -404,6 +486,36 @@ export default {
 }
 .body .ringkasan-order {
   font-size: 12px;
+}
+#search-customer {
+  display: none;
+  position: absolute;
+  z-index: 100;
+  background: white;
+}
+.search-customer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.search-customer ul li {
+  cursor: pointer;
+  padding: 0 1vw;
+  background: white;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.search-customer ul li:hover {
+  background: grey;
+}
+.search-customer .customer-name {
+  font-weight: 700;
+  font-size: 12px;
+}
+.search-customer .customer-code {
+  font-size: 10px;
+}
+.search-customer .customer-id {
+  font-size: 10px;
 }
 .total-checkout {
   font-size: 16px;
