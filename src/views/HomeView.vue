@@ -240,11 +240,15 @@ export default {
         notes: notes,
         items: items,
       }
-      await axios.post(this.$host + '/invoices/make_invoice', invoice).then(() => {
-        console.log('success make invoice')
+      let newInvoice = null
+      await axios.post(this.$host + '/invoices/make_invoice', invoice).then((response) => {
+        newInvoice = response.data.data
       }).catch(error => {
         console.log(error)
       })
+
+      // redirect
+      window.location.href = this.$appHost + '/print?id=' + newInvoice.id
     }
   },
   computed: {
@@ -257,7 +261,7 @@ export default {
       }
       let cartItems = this.tbody[this.activeTab - 1].items
       cartItems.forEach(item => {
-        detailOrder.subtotal += item.quantity * (item.product ? item.product.unitPrice : 0)
+        detailOrder.subtotal += item.quantity * (item.product.unitPrice ? item.product.unitPrice : 0)
         detailOrder.discount += item.quantity * (item.product ? (item.product.discount ? item.product.discount.discountAmount : 0) : 0)
       })
       detailOrder.tax = detailOrder.subtotal * 0.11

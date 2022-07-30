@@ -128,7 +128,7 @@
             </div>
             <div>
               <button 
-                type="button"
+                type="submit"
                 class="fill-button"
                 @click="print()"
                 data-bs-dismiss="modal"

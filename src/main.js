@@ -13,5 +13,6 @@ import './assets/css/main.css'
 const app = createApp(App)
 
 app.config.globalProperties.$host = 'http://localhost:8000/api';
+app.config.globalProperties.$appHost = 'http://localhost:8080/#';
 
 app.use(router).mount('#app')

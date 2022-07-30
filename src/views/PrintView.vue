@@ -1,0 +1,254 @@
+<template>
+  <div class="header">
+    <div class="onega-symbol">
+      <img :src="onegaLogo">
+    </div>
+    <div class="sales-order">
+      <span>Sales Order</span>
+    </div>
+  </div>
+
+  <div class="description">
+    <div class="yth">
+      <div>Kepada</div>
+      <div class="font-bold">PT ONEGA</div>
+      <div>Amartha Safira C10/11, Krajan, Sepande,</div>
+      <div>Kec. Candi, Sidoarjo</div>
+      <div>+62 8123456789</div>
+    </div>
+    <div class="invoice-detail">
+      <table>
+        <tr class="id-transaksi">
+          <td>ID Transaksi</td>
+          <td class="px-2">:</td>
+          <td class="font-bold font-italic">SO-31253</td>
+        </tr>
+        <tr class="id-transaksi">
+          <td>Date Issued</td>
+          <td class="px-2">:</td>
+          <td class="font-bold font-italic">01 Jan 2022</td>
+        </tr>
+        <tr class="id-transaksi">
+          <td>Invoice No</td>
+          <td class="px-2">:</td>
+          <td class="font-bold font-italic">12345</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="invoice-items">
+    <table class="table-white">
+      <tr class="bg-white font-black border-bottom">
+        <th>No</th>
+        <th>SKU Code</th>
+        <th>Item</th>
+        <th>Price</th>
+        <th>Qty</th>
+        <th>Diskon</th>
+        <th>Subtotal</th>
+      </tr>
+      <tr v-for="(item, index) in invoiceItems" :key="index" class="border-bottom">
+        <td>{{ index + 1 }}</td>
+        <td>{{ item.product ? (item.product.sku_code ? item.product.sku_code : 'null') : 'null' }}</td>
+        <td>
+          {{ item.product ? (item.product.product_name ? item.product.product_name : 'null') : 'null' }}
+          <br><span class="font-bold font-italic">Promo Merdeka 5%</span>
+        </td>
+        <td>{{ item.product ? (item.product.unit_price ? item.product.unit_price : 'null') : 'null' }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.product ? (item.product.discount ? (item.product.discount.discount_amount ? item.product.discount.discount_amount : 'null') : 'null') : 'null' }}</td>
+        <td>Rp{{ item.subtotal ? item.subtotal : 0 }}</td>
+      </tr>
+      <tr class="border-bottom">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>Subtotal :</td>
+        <td>Rp{{ invoice ? invoice.subtotal : 0 }}</td>
+      </tr>
+      <tr class="total-price">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td class="font-italic">Total(IDR) : </td>
+        <td class="font-italic">Rp{{ invoice ? invoice.total_price : 0 }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="footer">
+    <div>
+      Terbilang:
+    </div>
+    <div class="terbilang-value">
+      Delapan Ratus Lima Belas Ribu Rupiah
+    </div>
+    <div class="syarat">
+      *Syarat syarat dan ketentuan lainnya dalam pelaksanaan pekerjaan tertuang dalam lampiran order kerja ini yang merupakan satu kesatuan yang tidak terpisahkan.
+    </div>
+    <hr class="my-1">
+    <div class="notes">
+      <div>
+        Notes:
+      </div>
+      <div class="notes-value">
+        {{ invoice ? invoice.notes : 'null' }}
+      </div>
+    </div>
+    <hr class="my-1">
+  </div>
+
+  <div class="ttd pt-4">
+    <div class="rekanan me-5">
+      <div>
+        Order disetujui oleh Rekanan:
+      </div>
+      <div>
+        Vendor 1
+      </div>
+      <div class="line border-bottom">
+      </div>
+    </div>
+    <div class="floo ms-5">
+      <div>
+        PT. FLoo Integra Digital
+      </div>
+      <div class="line border-bottom">
+        Iqbal Permana
+      </div>
+    </div>
+  </div>
+
+  <div class="copyright">
+    <div class="thanks-logo">
+      <img :src="thanksLogo">
+    </div>
+    <div class="contact">
+      onega@mail.com  |  +62 1234567891  |  onega.com
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from 'axios'
+
+export default {
+  name: 'PrintView',
+  async mounted() {
+    await axios.get(this.$host + '/invoices/' + this.id).then(response => {
+      this.invoice = response.data.data;
+      this.invoiceItems = this.invoice.invoice_items
+      console.log(this.invoice)
+    });
+  },
+  data() {
+    return {
+      id: this.$route.query.id,
+      invoice: null,
+      invoiceItems: null,
+      onegaLogo: require('@/assets/icon/onega-logo.png'),
+      thanksLogo: require('@/assets/icon/thanks-logo.png'),
+    }
+  }
+}
+</script>
+
+<style scoped>
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 3vh 5vw;
+  }
+  .header .sales-order {
+    font-weight: 700;
+    font-size: 20px;
+    margin-left: auto;
+    font-style: italic;
+  }
+
+  .description {
+    display: flex;
+    padding: 2vh 5vw 3vh 5vw;
+    font-size: 12px;
+  }
+  .description .invoice-detail {
+    margin-left: auto;
+  }
+
+  .invoice-items {
+    padding: 1vh 5vw;
+  }
+  .table-white {
+    font-size: 11px;
+    margin-bottom: 0.5vh;
+    width: 100%;
+  }
+  .table-white th {
+    font-weight: 400;
+    background: white!important;
+    color: black;
+  }
+  .table-white td {
+    padding: 0.5vh 0
+  }
+  .table-white .total-price td {
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .footer {
+    padding: 1vh 5vw;
+    font-size: 12px;
+  }
+  .footer .terbilang-value {
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .footer .notes-value {
+    font-weight: 700;
+  }
+  .ttd {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    text-align: center;
+  }
+  .ttd .line {
+    margin-top: 5rem;
+  }
+
+  .copyright {
+    padding: 5vh 5vw 3vh 5vw;
+    display: flex;
+    align-items: center;
+  }
+  .copyright .thanks-logo {
+    width: 60%;
+  }
+  .copyright .contact {
+    margin-left: auto;
+    font-size: 12px;
+    color: rgba(0,0,0,0.3);
+  }
+
+  .font-bold {
+    font-weight: 700;
+  }
+  .font-italic {
+    font-style: italic;
+  }
+  .bg-white {
+    background-color: white!important;
+  }
+  .font-black {
+    color: black!important;
+  }
+  .border-bottom {
+    border-bottom: 1px solid black;
+  }
+</style>
