@@ -52,7 +52,7 @@
           </div>
         </td>
         <td>
-          <span id="price">{{ val.product ? val.product.unitPrice : '' }}</span>
+          <span id="price">{{ val.product ? (val.product.unitPrice ? formatRupiah(val.product.unitPrice) : 0) : 0 }}</span>
         </td>
         <td>
           <div class="qty-wrap">
@@ -68,11 +68,11 @@
         </td>
         <td>
           <div class="diskon">
-            {{ val.product ? (val.product.discount ? val.product.discount.discountAmount : 0) : 0 }}
+            {{ val.product ? (val.product.discount ? (val.product.discount.discountAmount ? formatRupiah(val.product.discount.discountAmount) : 0) : 0) : 0 }}
           </div>
         </td>
         <td class="d-flex align-items-center">
-          <span>{{ subtotalItem[index] }}</span>
+          <span>{{ subtotalItem[index] ? formatRupiah(subtotalItem[index]) : 0 }}</span>
           <button class="trash-btn" @click="deleteItem(index)">
             <img :src="trashIcon">
           </button>
@@ -147,6 +147,24 @@ export default {
         $('#product-name').text(product.product_name)
       }
       this.$emit('addNewItem', {product, index})
+    },
+    formatRupiah: function (angka) {
+      angka = angka.toString()
+      
+      let number_string = angka.replace(/[^,\d]/g, '').toString()
+      let split   		= number_string.split(',')
+      let sisa     		= split[0].length % 3
+      let rupiah     		= split[0].substr(0, sisa)
+      let ribuan     		= split[0].substr(sisa).match(/\d{3}/gi)
+    
+      // tambahkan titik jika yang di input sudah menjadi angka ribuan
+      if(ribuan){
+        let separator = sisa ? '.' : ''
+        rupiah += separator + ribuan.join('.')
+      }
+    
+      rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah
+      return rupiah ? 'Rp' + rupiah : 'Rp0'
     }
   },
   async mounted() {

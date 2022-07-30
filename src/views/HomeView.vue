@@ -69,7 +69,7 @@
               Subtotal
             </div>
             <div class="detail-value">
-              Rp{{ detailOrder.subtotal }}
+              {{ formatRupiah(detailOrder.subtotal) }}
             </div>
           </div>
           <hr class="my-2">
@@ -78,7 +78,7 @@
               Discount
             </div>
             <div class="detail-value">
-              -Rp{{ detailOrder.discount }}
+              -{{ formatRupiah(detailOrder.discount) }}
             </div>
           </div>
           <hr class="my-2">
@@ -87,7 +87,7 @@
               PPN 11%
             </div>
             <div class="detail-value">
-              Rp{{ detailOrder.tax }}
+              {{ formatRupiah(detailOrder.tax) }}
             </div>
           </div>
           <hr class="my-2">
@@ -96,7 +96,7 @@
               Total
             </div>
             <div class="total-value">
-              Rp{{ detailOrder.totalPrice }}
+              {{ formatRupiah(detailOrder.totalPrice) }}
             </div>
           </div>
           <button class="checkout-btn" type="button" data-bs-toggle="modal" :data-bs-target="'#' + idCheckoutModal">
@@ -143,6 +143,7 @@ export default {
     CheckoutModal
   },
   async mounted() {
+    // adding bootstrap javascript to the page (inside tag head)
     let bootstrapJS = document.createElement('script')
     bootstrapJS.setAttribute('src', 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js')
     document.head.appendChild(bootstrapJS)
@@ -151,7 +152,27 @@ export default {
     this.tbody[0].id = 1
     await axios.get(this.$host + '/carts/' + this.tbody[0].id).then(response => {
       cart = response.data.data
-      console.log(cart)
+      this.tbody[0].id = cart.id
+      this.tbody[0].customer_id = cart.customer_id
+      this.tbody[0].notes = cart.notes
+      cart.cart_items.forEach((item) => {
+        let newItem = {
+          product: {
+            id: item.product.id,
+            skuCode: item.product.sku_code,
+            productName: item.product.product_name,
+            description: item.product.description,
+            unitPrice: item.product.unit_price,
+            discount: {
+              id: item.product.discount ? item.product.discount.id : 0,
+              name: item.product.discount ? item.product.discount.name : '',
+              discountAmount: item.product.discount ? item.product.discount.discount_amount : 0,
+            }
+          },
+          quantity: item.quantity
+        }
+        this.tbody[0].items.push(newItem)
+      })
     }).catch(error => {
       console.log(error)
     })
@@ -249,6 +270,24 @@ export default {
 
       // redirect
       window.location.href = this.$appHost + '/print?id=' + newInvoice.id
+    },
+    formatRupiah: function (angka) {
+      angka = angka.toString()
+      
+      let number_string = angka.replace(/[^,\d]/g, '').toString()
+      let split   		= number_string.split(',')
+      let sisa     		= split[0].length % 3
+      let rupiah     		= split[0].substr(0, sisa)
+      let ribuan     		= split[0].substr(sisa).match(/\d{3}/gi)
+    
+      // tambahkan titik jika yang di input sudah menjadi angka ribuan
+      if(ribuan){
+        let separator = sisa ? '.' : ''
+        rupiah += separator + ribuan.join('.')
+      }
+    
+      rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah
+      return rupiah ? 'Rp' + rupiah : 'Rp0'
     }
   },
   computed: {
