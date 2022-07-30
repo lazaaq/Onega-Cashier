@@ -49,17 +49,17 @@
                 <tr v-for="(val, index) in items" :key="index">
                   <td>{{ val.product ? val.product.skuCode : '' }}</td>
                   <td>{{ val.product ? val.product.productName : '' }} <span class="item-promo">Promo Merdeka 5%</span></td>
-                  <td>{{ val.product ? val.product.unitPrice : 0 }}</td>
+                  <td>{{ val.product ? (val.product.unitPrice ? formatRupiah(val.product.unitPrice) : 0) : 0 }}</td>
                   <td>
                     <div class="qty">{{ val.quantity }}</div>
                   </td>
                   <td>
                     <div class="diskon">
-                      {{ val.product ? (val.product.discount ? val.product.discount.discountAmount : 0) : 0 }}
+                      {{ val.product ? (val.product.discount ? formatRupiah(val.product.discount.discountAmount ? val.product.discount.discountAmount : 0) : 0) : 0 }}
                     </div>
                   </td>
                   <td class="d-flex">
-                    <div class="">{{ subtotalItems[index] }}</div>
+                    <div class="">{{ formatRupiah(subtotalItems[index]) }}</div>
                   </td>
                 </tr>
               </tbody>
@@ -74,7 +74,7 @@
                     Subtotal
                   </td>
                   <td class="text-end">
-                    Rp{{ subtotalOrder }}
+                    {{ formatRupiah(detailOrder.subtotal) }}
                   </td>
                 </tr>
                 <tr class="">
@@ -82,7 +82,7 @@
                     Diskon
                   </td>
                   <td class="text-end">
-                    Rp0.0
+                    {{ formatRupiah(detailOrder.discount) }}
                   </td>
                 </tr>
                 <tr class="">
@@ -90,7 +90,7 @@
                     PPN 11%
                   </td>
                   <td class="text-end">
-                    Rp{{ tax }}
+                    {{ formatRupiah(detailOrder.tax) }}
                   </td>
                 </tr>
                 <tr class="total-checkout">
@@ -98,7 +98,7 @@
                     Total
                   </td>
                   <td class="text-end">
-                    Rp{{ totalPrice }}
+                    {{ formatRupiah(detailOrder.totalPrice) }}
                   </td>
                 </tr>
               </table>
@@ -122,7 +122,7 @@
           <div class="d-flex">
             <div class="ms-auto me-2">
               <button type="button" class="border-button">
-                <img src="@/assets/icon/save.png" alt="" width="12px">
+                <img :src="saveIcon" class="save-icon">
                 <span>Save</span>
               </button>
             </div>
@@ -133,7 +133,7 @@
                 @click="print()"
                 data-bs-dismiss="modal"
               >
-                <img src="@/assets/icon/print.png" alt="" width="12px">
+                <img :src="printIcon" class="print-icon">
                 <span>Print</span>
               </button>
             </div>
@@ -158,7 +158,25 @@ export default {
         return
       }
       this.$emit('print', this.notes)
-    }
+    },
+    formatRupiah: function (angka) {
+      angka = angka.toString()
+      
+      let number_string = angka.replace(/[^,\d]/g, '').toString()
+      let split   		= number_string.split(',')
+      let sisa     		= split[0].length % 3
+      let rupiah     		= split[0].substr(0, sisa)
+      let ribuan     		= split[0].substr(sisa).match(/\d{3}/gi)
+    
+      // tambahkan titik jika yang di input sudah menjadi angka ribuan
+      if(ribuan){
+        let separator = sisa ? '.' : ''
+        rupiah += separator + ribuan.join('.')
+      }
+    
+      rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah
+      return rupiah ? 'Rp' + rupiah : 'Rp0'
+    },
   },
   computed: {
     subtotalOrder() {
@@ -184,6 +202,8 @@ export default {
   data() {
     return {
       notes: '',
+      saveIcon: require('@/assets/icon/save.png'),
+      printIcon: require('@/assets/icon/print.png'),
     }
   }
 }
@@ -324,5 +344,10 @@ export default {
   }
   .notes .input-notes input::placeholder {
     font-size: 12px;
+  }
+
+  .save-icon,
+  .print-icon {
+    width: 12px;
   }
 </style>

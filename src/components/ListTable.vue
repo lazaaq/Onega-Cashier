@@ -68,7 +68,7 @@
         </td>
         <td>
           <div class="diskon">
-            {{ val.product ? (val.product.discount ? (val.product.discount.discountAmount ? formatRupiah(val.product.discount.discountAmount) : 0) : 0) : 0 }}
+            {{ val.product ? (val.product.discount ? formatRupiah(val.product.discount.discountAmount ? val.product.discount.discountAmount : 0) : 0) : 0 }}
           </div>
         </td>
         <td class="d-flex align-items-center">

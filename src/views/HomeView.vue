@@ -144,7 +144,6 @@
           :idModal="idCheckoutModal"
           :thead="thead"
           :items="tbody[activeTab-1].items"
-          :trashIcon="trashIcon"
           :detailOrder="detailOrder"
           :subtotalItems="subtotalItems"
           @print="print($event)"
