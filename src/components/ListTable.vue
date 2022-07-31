@@ -9,43 +9,42 @@
       <tr v-for="(val, index) in items" :key="index">
         <td>
           <div class="w-100">
-            <span 
-              class="input"
-              id="sku-code"
-              contenteditable
-              @keyup="openSearchSkuCode(index)"
-              >{{ val.product ? val.product.skuCode : '' }}
-            </span>
+            <input
+              class="input search-sku-code"
+              :id="'search-sku-code-' + index"
+              @focus="focusSearchSkuCode(index)"
+              @keyup="setSearchSkuCode(index)"
+              v-model="val.product.skuCode"
+            />
           </div>
-          <div :id="'search_sku_' + index" class="search-item">
+          <div :id="'search_sku_' + index" class="search-item1">
             <ul>
               <li 
                 v-for="(product, productIndex) in filteredProductsSku" 
                 :key="productIndex"
-                @click="addNewItem(product, index, 'skucode')"
+                @click="addNewItem(product, index)"
                 >{{ product.sku_code }}
               </li>
             </ul>
           </div>
         </td>
         <td>
-          <div class="w-100">
-            <span
-              class="input"
-              id="product-name"
-              role="textbox"
-              contenteditable
-              @keyup="openSearchProductName(index)"
-            > {{ val.product ? val.product.productName : '' }}
-            </span>
+          <div class="w-100 d-flex">
+            <input
+              class="input search-product-name"
+              :id="'search-product-name-' + index"
+              @focus="focusSearchProductName(index)"
+              @keyup="setSearchProductName(index)"
+              v-model="val.product.productName"
+            />
             <span class="item-promo">Promo Merdeka 5%</span>
           </div>
-          <div :id="'search_item_' + index" class="search-item">
+          <div :id="'search_item_' + index" class="search-item2">
             <ul>
               <li 
                 v-for="(product, productIndex) in filteredProductsItem" 
                 :key="productIndex"
-                @click="addNewItem(product, index, 'productname')"
+                @click="addNewItem(product, index)"
                 >{{ product.product_name }}
               </li>
             </ul>
@@ -90,37 +89,48 @@ window.$ = $;
 
 export default {
   name: 'ListTable',
-  props: [
-    'thead',
-    'items',
-    'trashIcon'
-  ],
-  computed: {
-    subtotalItem() {
-      let subtotal = [];
-      this.items.forEach(item => {
-        subtotal.push(item.product.unitPrice * item.quantity);
-      });
-      return subtotal;
-    },
-    filteredProductsSku() {
-      let query = this.searchProduct.toLowerCase()
-      if (this.searchProduct == '') {
-        return this.products
+  async mounted() {
+    await axios.get(this.$host + '/products').then(response => {
+      this.products = response.data.data
+    }).catch(error => {
+      console.log(error)
+    })
+
+    let i = 0
+    this.products.forEach((product) => { 
+      $('#search-sku-code-' + i).value = product.sku_code
+      $('#search-product-name-' + i).value = product.product_name
+      i += 1
+    })
+
+    let itemsLength = this.items.length
+    window.onclick = function() {
+      let checkFocusSkuCode = false
+      let checkFocusProductName = false
+      for (let i = 0; i < itemsLength; i++) {
+        if (document.getElementById("search-sku-code-" + i) == document.activeElement) {
+          checkFocusSkuCode = true
+          break
+        }
       }
-      return this.products.filter(function(el) {
-        return el.sku_code.toLowerCase().includes(query)
-      });
-    },
-    filteredProductsItem() {
-      let query = this.searchProduct.toLowerCase()
-      if (this.searchProduct == '') {
-        return this.products
+      for (let i = 0; i < itemsLength; i++) {
+        if (document.getElementById("search-product-name-" + i) == document.activeElement) {
+          checkFocusProductName = true
+          break
+        }
       }
-      return this.products.filter(function(el) {
-        return el.product_name.toLowerCase().includes(query)
-      });
+      if(!checkFocusSkuCode) {
+        document.querySelectorAll(".search-item1").forEach(
+          a => a.style.display = "none"
+        );
+      }
+      if(!checkFocusProductName) {
+        document.querySelectorAll(".search-item2").forEach(
+          a => a.style.display = "none"
+        );
+      }
     }
+    
   },
   methods: {
     deleteItem: function (index) {
@@ -130,22 +140,14 @@ export default {
       let value = parseInt($('#qty_' + index).text())
       this.$emit('changeQty', {index, value})
     },
-    openSearchSkuCode: function (index) {
-      let searchElement = document.getElementById("search_sku_" + index)
-      searchElement.style.display = "block"
-      this.searchProduct = $('#sku-code').text()
+    focusSearchSkuCode: function (index) {
+      document.getElementById('search_sku_' + index).style.display = 'block'
     },
-    openSearchProductName: function (index) {
-      let searchElement = document.getElementById("search_item_" + index)
-      searchElement.style.display = "block"
-      this.searchProduct = $('#product-name').text()
+    focusSearchProductName: function (index) {
+      document.getElementById('search_item_' + index).style.display = 'block'
     },
-    addNewItem: function (product, index, inputtype) {
-      if (inputtype == 'skucode') {
-        $('#sku-code').text(product.sku_code)
-      } else {
-        $('#product-name').text(product.product_name)
-      }
+    addNewItem: function (product, index) {
+      document.getElementById('search_sku_' + index).style.display = 'none'
       this.$emit('addNewItem', {product, index})
     },
     formatRupiah: function (angka) {
@@ -165,27 +167,51 @@ export default {
     
       rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah
       return rupiah ? 'Rp' + rupiah : 'Rp0'
-    }
+    },
+    setSearchSkuCode: function (index) {
+      this.searchSkuCode = this.items[index].product.skuCode
+    },
+    setSearchProductName: function (index) {
+      this.searchProductName = this.items[index].product.productName
+    },
   },
-  async mounted() {
-    await axios.get(this.$host + '/products').then(response => {
-      this.products = response.data.data
-    }).catch(error => {
-      console.log(error)
-    })
-
-    window.onclick = function(event) {
-      if (event.target.class != 'search-item') {
-        document.querySelectorAll(".search-item").forEach(
-          a => a.style.display = "none"
-        );
+  computed: {
+    subtotalItem() {
+      let subtotal = [];
+      this.items.forEach(item => {
+        subtotal.push(item.product.unitPrice * item.quantity);
+      });
+      return subtotal;
+    },
+    filteredProductsSku() {
+      let query = this.searchSkuCode.toLowerCase()
+      if (this.searchSkuCode == '') {
+        return this.products
       }
-    }
+      return this.products.filter(function(el) {
+        return el.sku_code.toLowerCase().includes(query)
+      });
+    },
+    filteredProductsItem() {
+      let query = this.searchProductName.toLowerCase()
+      if (this.searchProductName == '') {
+        return this.products
+      }
+      return this.products.filter(function(el) {
+        return el.product_name.toLowerCase().includes(query)
+      });
+    },
   },
+  props: [
+    'thead',
+    'items',
+    'trashIcon'
+  ],
   data() {
     return {
       products: null,
-      searchProduct: '',
+      searchSkuCode: '',
+      searchProductName: '',
     }
   }
 }
@@ -205,6 +231,16 @@ export default {
 .table td {
   padding: 0.75vh 1vw;
 }
+.table .input {
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.3);
+  outline: none;
+  width: 100%;
+}
+.table .search-product-name {
+  min-width: 100px;
+  width: fit-content!important;
+}
 .table .item-promo {
   background: #EBEFF4;
   border-radius: 4px;
@@ -212,19 +248,22 @@ export default {
   font-weight: 700;
   padding: 4px 6px;
 }
-.table .search-item {
+.table .search-item1,
+.table .search-item2 {
   display: none;
   position: absolute;
   background-color: white;
   border: 1px solid grey;
   border-radius: 6px;
 }
-.table .search-item ul {
+.table .search-item1 ul,
+.table .search-item2 ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
-.table .search-item ul li {
+.table .search-item1 ul li,
+.table .search-item2 ul li {
   border: none;
   background-color: white;
   width: 100%;
@@ -233,7 +272,8 @@ export default {
   margin: 0;
   cursor: pointer;
 }
-.table .search-item ul li:hover {
+.table .search-item1 ul li:hover,
+.table .search-item2 ul li:hover {
   background-color: rgba(0,0,0,0.2);
 }
 .table .qty-wrap {

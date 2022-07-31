@@ -345,12 +345,8 @@ export default {
     focusInput: function () {
       document.getElementById('search-customer').style.display = 'block'
     },
-    focusoutInput: function () {
-      document.getElementById('search-customer').style.display = 'none'
-    },
     keyupSearchCustomer: function (id) {
       this.searchCustomerQuery = $('#' + id).val()
-      console.log(this.searchCustomerQuery)
     },
     selectCustomer: function (customer) {
       this.selectedCustomer = customer
