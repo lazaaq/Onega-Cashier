@@ -184,36 +184,6 @@ export default {
     bootstrapJS.setAttribute('src', 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js')
     document.head.appendChild(bootstrapJS)
 
-    // get card initial data from server (probably delete soon)
-    let cart = null
-    this.tbody[0].id = 1
-    await axios.get(this.$host + '/carts/' + this.tbody[0].id).then(response => {
-      cart = response.data.data
-      this.tbody[0].id = cart.id
-      this.tbody[0].customer_id = cart.customer_id
-      this.tbody[0].notes = cart.notes
-      cart.cart_items.forEach((item) => {
-        let newItem = {
-          product: {
-            id: item.product.id,
-            skuCode: item.product.sku_code,
-            productName: item.product.product_name,
-            description: item.product.description,
-            unitPrice: item.product.unit_price,
-            discount: {
-              id: item.product.discount ? item.product.discount.id : 0,
-              name: item.product.discount ? item.product.discount.name : '',
-              discountAmount: item.product.discount ? item.product.discount.discount_amount : 0,
-            }
-          },
-          quantity: item.quantity
-        }
-        this.tbody[0].items.push(newItem)
-      })
-    }).catch(error => {
-      console.log(error)
-    })
-
     // get customers data
     await axios.get(this.$host + '/customers').then(response => {
       this.customersData = response.data.data
@@ -234,7 +204,7 @@ export default {
     updateActiveTab: function (newActiveTab) {
       this.activeTab = newActiveTab
     },
-    addTab: async function (tabs) {
+    addTab: function (tabs) {
       let newCart = {
         id: null,
         customer_id: null,
@@ -348,8 +318,43 @@ export default {
     keyupSearchCustomer: function (id) {
       this.searchCustomerQuery = $('#' + id).val()
     },
-    selectCustomer: function (customer) {
+    selectCustomer: async function (customer) {
       this.selectedCustomer = customer
+      $('#search').val(this.selectedCustomer.name)
+
+      await axios.get(this.$host + '/carts/' + this.selectedCustomer.id).then(response => {
+        let data = response.data.data
+        if(data != null) {
+          let cart = {
+            id: data.id,
+            customer_id: data.customer_id,
+            notes: data.notes,
+            items: []
+          }
+          data.cart_items.forEach(item => {
+            let newItem = {
+              product: {
+                id: item.product.id,
+                skuCode: item.product.sku_code,
+                productName: item.product.product_name,
+                description: item.product.description,
+                unitPrice: item.product.unit_price,
+                discount: {
+                  id: item.product.discount ? item.product.discount.id : 0,
+                  name: item.product.discount ? item.product.discount.name : '',
+                  discountAmount: item.product.discount ? item.product.discount.discount_amount : 0,
+                }
+              },
+              quantity: item.quantity
+            }
+            cart.items.push(newItem)
+          })
+          this.tbody[this.activeTab - 1] = cart
+        }
+        console.log(this.tbody)
+      }).catch(error => {
+        console.log(error)
+      })
     },
     searchCustomer: function () {
       console.log('search')
