@@ -324,7 +324,15 @@ export default {
 
       await axios.get(this.$host + '/carts/' + this.selectedCustomer.id).then(response => {
         let data = response.data.data
-        if(data != null) {
+        if(data == null) {
+          let cart = {
+            id: 0,
+            customer_id: this.selectedCustomer.id,
+            notes: '',
+            items: []
+          }
+          this.tbody[this.activeTab - 1] = cart
+        } else {
           let cart = {
             id: data.id,
             customer_id: data.customer_id,
@@ -409,7 +417,7 @@ export default {
         {
           id: 0,
           customer_id: 0,
-          notes: 'notes',
+          notes: '',
           items: [],
         }
       ],
