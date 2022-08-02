@@ -244,7 +244,6 @@ export default {
       let index = param.index
       let value = param.value
       this.tbody[this.activeTab - 1].items[index].quantity = value
-      console.log(this.tbody[this.activeTab - 1].items)
     },
     addNewItem: function(param) {
       let product = param.product
@@ -259,9 +258,10 @@ export default {
           id: product.discount ? product.discount.id : 0,
           name: product.discount ? product.discount.name : '',
           discountAmount: product.discount ? product.discount.discount_amount : 0,
+          discountPercent: product.discount ? product.discount.discount_percent : 0,
+          type: product.discount ? product.discount.type : '',
         }
       }
-      console.log(this.tbody[this.activeTab - 1].items)
     },
     print: async function (notes) {
       // store to make_invoice 
@@ -351,6 +351,8 @@ export default {
                   id: item.product.discount ? item.product.discount.id : 0,
                   name: item.product.discount ? item.product.discount.name : '',
                   discountAmount: item.product.discount ? item.product.discount.discount_amount : 0,
+                  discountPercent: item.product.discount ? item.product.discount.discount_percent : 0,
+                  type: item.product.discount ? item.product.discount.type : '',
                 }
               },
               quantity: item.quantity
@@ -378,8 +380,14 @@ export default {
       }
       let cartItems = this.tbody[this.activeTab - 1].items
       cartItems.forEach(item => {
+        // accumulate subtotal
         detailOrder.subtotal += item.quantity * (item.product.unitPrice ? item.product.unitPrice : 0)
-        detailOrder.discount += item.quantity * (item.product ? (item.product.discount ? item.product.discount.discountAmount : 0) : 0)
+        // accumulate discount
+        if (item.product && item.product.discount && item.product.discount.type == 'amount') {
+          detailOrder.discount += item.quantity * (item.product.discount.discountAmount ? item.product.discount.discountAmount : 0)
+        } else if (item.product && item.product.discount && item.product.discount.type == 'percent') {
+          detailOrder.discount += item.quantity * ((item.product.discount.discountPercent ? item.product.discount.discountPercent : 0) * (item.product.unitPrice ? item.product.unitPrice : 0) / 100)
+        }
       })
       detailOrder.tax = detailOrder.subtotal * 0.11
       detailOrder.totalPrice = detailOrder.subtotal - detailOrder.discount + detailOrder.tax

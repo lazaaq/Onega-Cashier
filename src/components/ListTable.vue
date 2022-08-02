@@ -37,7 +37,9 @@
               @keyup="setSearchProductName(index)"
               v-model="val.product.productName"
             />
-            <span class="item-promo">Promo Merdeka 5%</span>
+            <span class="item-promo">
+              {{ val.product ? (val.product.discount ? val.product.discount.name : '') : '' }}
+            </span>
           </div>
           <div :id="'search_item_' + index" class="search-item2">
             <ul>
@@ -67,7 +69,7 @@
         </td>
         <td>
           <div class="diskon">
-            {{ val.product ? (val.product.discount ? formatRupiah(val.product.discount.discountAmount ? val.product.discount.discountAmount : 0) : 0) : 0 }}
+            {{ val.product ? (val.product.discount ? formatRupiah(discountItem[index]) : 0) : 0}}
           </div>
         </td>
         <td class="d-flex align-items-center">
@@ -176,10 +178,34 @@ export default {
     },
   },
   computed: {
+    discountItem() {
+      let discounts = []
+      this.items.forEach((item) => {
+        if (item.product && item.product.discount && item.product.discount.type == 'amount') {
+          let discount = item.product.discount.discountAmount * item.quantity
+          discounts.push(discount)
+        } else if (item.product && item.product.discount && item.product.discount.type == 'percent') {
+          let discount = (item.product.discount.discountPercent * item.product.unitPrice / 100) * item.quantity
+          discounts.push(discount)
+        } else {
+          discounts.push(0)
+        }
+      })
+      return discounts
+    },
     subtotalItem() {
       let subtotal = [];
       this.items.forEach(item => {
-        subtotal.push(item.product.unitPrice * item.quantity);
+        let discount = 0
+        if (item.product.discount) {
+          if (item.product.discount.type == 'percent') {
+            discount = item.product.unitPrice * item.product.discount.discountPercent / 100
+          } else if (item.product.discount.type == 'amount') {
+            discount = item.product.discount.discountAmount
+          }
+        }
+        let subtotalItem = (item.product.unitPrice - discount) * item.quantity
+        subtotal.push(subtotalItem);
       });
       return subtotal;
     },
