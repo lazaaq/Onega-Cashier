@@ -394,12 +394,20 @@ export default {
       return detailOrder
     },
     subtotalItems() {
-      let subtotalItems = []
+      let subtotal = [];
       this.tbody[this.activeTab - 1].items.forEach(item => {
-        let subtotalItem = item.product.unitPrice * item.quantity
-        subtotalItems.push(subtotalItem)
-      })
-      return subtotalItems
+        let discount = 0
+        if (item.product.discount) {
+          if (item.product.discount.type == 'percent') {
+            discount = item.product.unitPrice * item.product.discount.discountPercent / 100
+          } else if (item.product.discount.type == 'amount') {
+            discount = item.product.discount.discountAmount
+          }
+        }
+        let subtotalItem = (item.product.unitPrice - discount) * item.quantity
+        subtotal.push(subtotalItem);
+      });
+      return subtotal;
     },
     filteredCustomersData() {
       let query = this.searchCustomerQuery.toLowerCase()

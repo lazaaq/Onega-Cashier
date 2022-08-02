@@ -69,11 +69,11 @@
         </td>
         <td>
           <div class="diskon">
-            {{ val.product ? (val.product.discount ? formatRupiah(discountItem[index]) : 0) : 0}}
+            {{ formatRupiah(discountItem[index]) }}
           </div>
         </td>
         <td class="d-flex align-items-center">
-          <span>{{ subtotalItem[index] ? formatRupiah(subtotalItem[index]) : 0 }}</span>
+          <span>{{ subtotalItems[index] ? formatRupiah(subtotalItems[index]) : 0 }}</span>
           <button class="trash-btn" @click="deleteItem(index)">
             <img :src="trashIcon">
           </button>
@@ -193,7 +193,7 @@ export default {
       })
       return discounts
     },
-    subtotalItem() {
+    subtotalItems() {
       let subtotal = [];
       this.items.forEach(item => {
         let discount = 0

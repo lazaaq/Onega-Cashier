@@ -48,14 +48,19 @@
               <tbody>
                 <tr v-for="(val, index) in items" :key="index">
                   <td>{{ val.product ? val.product.skuCode : '' }}</td>
-                  <td>{{ val.product ? val.product.productName : '' }} <span class="item-promo">Promo Merdeka 5%</span></td>
+                  <td>
+                    {{ val.product ? val.product.productName : '' }}
+                    <span class="item-promo">
+                      {{ val.product ? (val.product.discount ? val.product.discount.name : '') : '' }}
+                    </span>
+                  </td>
                   <td>{{ val.product ? (val.product.unitPrice ? formatRupiah(val.product.unitPrice) : 0) : 0 }}</td>
                   <td>
                     <div class="qty">{{ val.quantity }}</div>
                   </td>
                   <td>
                     <div class="diskon">
-                      {{ val.product ? (val.product.discount ? formatRupiah(val.product.discount.discountAmount ? val.product.discount.discountAmount : 0) : 0) : 0 }}
+                      {{ formatRupiah(discountItem[index]) }}
                     </div>
                   </td>
                   <td class="d-flex">
@@ -82,7 +87,7 @@
                     Diskon
                   </td>
                   <td class="text-end">
-                    {{ formatRupiah(detailOrder.discount) }}
+                    -{{ formatRupiah(detailOrder.discount) }}
                   </td>
                 </tr>
                 <tr class="">
@@ -179,6 +184,21 @@ export default {
     },
   },
   computed: {
+    discountItem() {
+      let discounts = []
+      this.items.forEach((item) => {
+        if (item.product && item.product.discount && item.product.discount.type == 'amount') {
+          let discount = item.product.discount.discountAmount * item.quantity
+          discounts.push(discount)
+        } else if (item.product && item.product.discount && item.product.discount.type == 'percent') {
+          let discount = (item.product.discount.discountPercent * item.product.unitPrice / 100) * item.quantity
+          discounts.push(discount)
+        } else {
+          discounts.push(0)
+        }
+      })
+      return discounts
+    },
     subtotalOrder() {
       return this.detailOrder.subtotal
     },
