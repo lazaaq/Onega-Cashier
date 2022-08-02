@@ -92,7 +92,7 @@ window.$ = $;
 export default {
   name: 'ListTable',
   async mounted() {
-    await axios.get(this.$host + '/products').then(response => {
+    await axios.get(this.$host + '/products', this.$config).then(response => {
       this.products = response.data.data
     }).catch(error => {
       console.log(error)

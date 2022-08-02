@@ -14,5 +14,10 @@ const app = createApp(App)
 
 app.config.globalProperties.$host = 'http://localhost:8000/api';
 app.config.globalProperties.$appHost = 'http://localhost:8080/#';
+app.config.globalProperties.$config = {
+  headers: { 
+    Authorization: 'Bearer w2bGiPtbwDT2IjDUaK4iVm2MHFgYxgjU9kC8ZrLj'
+  }
+};
 
 app.use(router).mount('#app')

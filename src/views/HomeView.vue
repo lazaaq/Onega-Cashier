@@ -185,7 +185,7 @@ export default {
     document.head.appendChild(bootstrapJS)
 
     // get customers data
-    await axios.get(this.$host + '/customers').then(response => {
+    await axios.get(this.$host + '/customers', this.$config).then(response => {
       this.customersData = response.data.data
     }).catch(error => {
       console.log(error)
@@ -285,7 +285,7 @@ export default {
         items: items,
       }
       let newInvoice = null
-      await axios.post(this.$host + '/invoices/make_invoice', invoice).then((response) => {
+      await axios.post(this.$host + '/invoices/make_invoice', invoice, this.$config).then((response) => {
         newInvoice = response.data.data
       }).catch(error => {
         console.log(error)
@@ -322,7 +322,7 @@ export default {
       this.selectedCustomer = customer
       $('#search').val(this.selectedCustomer.name)
 
-      await axios.get(this.$host + '/carts/' + this.selectedCustomer.id).then(response => {
+      await axios.get(this.$host + '/carts/by_customer/' + this.selectedCustomer.id, this.$config).then(response => {
         let data = response.data.data
         if(data == null) {
           let cart = {

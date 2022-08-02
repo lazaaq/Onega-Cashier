@@ -140,7 +140,7 @@ import axios from 'axios'
 export default {
   name: 'PrintView',
   async mounted() {
-    await axios.get(this.$host + '/invoices/' + this.id).then(response => {
+    await axios.get(this.$host + '/invoices/' + this.id, this.$config).then(response => {
       this.invoice = response.data.data;
       this.invoiceItems = this.invoice.invoice_items
       console.log(this.invoice)
