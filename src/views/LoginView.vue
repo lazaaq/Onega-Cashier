@@ -18,26 +18,46 @@
         Sign in
       </div>
       <div class="subtitle mb-2">
-        Enter your username and password
+        Enter your Email and password
       </div>
-      <form action="">
-        <TextField name="username" id="username" placeholder="Username" class="mb-2"/>
-        <TextField name="password" id="password" placeholder="Password" class="mb-2"/>
-        <TextField name="cashier" id="cashier" placeholder="Cashier" class="mb-2"/>
+      <div class="wrap-form">
+        <TextField 
+          name="email" 
+          id="email" 
+          placeholder="Email" 
+          class="mb-2"
+        />
+        <TextField 
+          name="password" 
+          id="password" 
+          placeholder="Password" 
+          class="mb-2"
+        />
+        <TextField 
+          name="cashier" 
+          id="cashier" 
+          placeholder="Cashier" 
+          class="mb-2"
+        />
         <div class="d-flex align-items-center">
           <div class="time d-flex align-items-center">
             00:00:00
           </div>
           <div class="ml-auto login-button-wrap" style="height=60px">
-            <ButtonField text='Login'/>
+            <ButtonField 
+              text='Login'
+              @click="login()"
+            />
           </div>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 import TextField from '@/components/form/TextField.vue'
 import ButtonField from '@/components/form/ButtonField.vue'
 
@@ -46,9 +66,34 @@ export default {
     TextField,
     ButtonField
   },
+  methods: {
+    login: async function() {
+      this.email = document.getElementById('email').value;
+      this.password = document.getElementById('password').value;
+      
+      let loginData = {
+        email: this.email,
+        password: this.password
+      }
+
+      // login
+      await axios.post('login', loginData).then(response => {
+        localStorage.setItem('token', response.data.access_token)
+      }).catch(error => {
+        console.log(error);
+      });
+    }
+  },
   props: [
     'dataButton'
-  ]
+  ],
+  data() {
+    return {
+      email: '',
+      password: '',
+      cashier: ''
+    }
+  }
 }
 </script>
 
@@ -100,7 +145,7 @@ export default {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.4);
 }
-.form form {
+.form .wrap-form {
   width: 300px;
 }
 .form .time {
