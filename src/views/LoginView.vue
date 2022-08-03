@@ -79,6 +79,7 @@ export default {
       // login
       await axios.post('login', loginData).then(response => {
         localStorage.setItem('token', response.data.access_token)
+        this.$router.push('/')
       }).catch(error => {
         console.log(error);
       });
