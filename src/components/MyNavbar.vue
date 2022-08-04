@@ -6,8 +6,9 @@
         <div class="header-date">Kamis, 01 Juli 2022. 15:05 WIB</div>
       </div>
       <div class="header-right">
-        <button class="p-0 border-0 bg-white">
-          <img src="./../assets/icon/profile.png" alt="Profile Icon" width="20px">
+        <button class="p-0 border-0 bg-white" id="button-logout" @click="logout()">
+          <img :src="logoutLogo" class="logout-image">
+          <span class="logout-text">Logout</span>
         </button>
       </div>
     </header>
@@ -15,8 +16,29 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
-  name: 'MyNavbar'
+  name: 'MyNavbar',
+  methods: {
+    logout: async function() {
+      console.log(localStorage.getItem('token'))
+      await axios.post('logout').then((response) => {
+        localStorage.removeItem('token');
+        console.log(response)
+      }).catch(error => {
+        console.log(error);
+      });
+      console.log(localStorage.getItem('token'))
+      this.$router.push('/login');
+    }
+  },
+  data() {
+    return {
+      profileLogo: require('@/assets/icon/profile.png'),
+      logoutLogo: require('@/assets/icon/logout.svg')
+    }
+  }
 }
 </script>
 
@@ -46,5 +68,13 @@ header .header-right {
   margin-left: auto;
   display: flex;
   align-items: center;
+}
+
+header .logout-image {
+  width: 20px;
+}
+
+header .logout-text {
+  font-size: 12px;
 }
 </style>

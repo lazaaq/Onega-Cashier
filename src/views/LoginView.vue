@@ -43,7 +43,7 @@
           <div class="time d-flex align-items-center">
             00:00:00
           </div>
-          <div class="ml-auto login-button-wrap" style="height=60px">
+          <div class="ms-auto login-button-wrap" :style="'height=60px'">
             <ButtonField 
               text='Login'
               @click="login()"
@@ -79,10 +79,11 @@ export default {
       // login
       await axios.post('login', loginData).then(response => {
         localStorage.setItem('token', response.data.access_token)
-        this.$router.push('/')
       }).catch(error => {
         console.log(error);
       });
+      // this.$router.push('/')
+      window.location.href = this.$appHost + '/'
     }
   },
   props: [
@@ -156,5 +157,9 @@ export default {
 .form .login-button-wrap {
   height: 40px;
   width: 100px;
+}
+
+#cashier {
+  background-color: rgba(0,0,0,0.1);
 }
 </style>

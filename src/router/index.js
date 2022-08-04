@@ -5,19 +5,33 @@ import PrintView from '../views/PrintView.vue'
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
-  },
-  {
     path: '/login',
     name: 'login',
     component: LoginView
   },
   {
+    path: '/',
+    name: 'home',
+    component: HomeView,
+    beforeEnter: (to, from, next) => {
+      if(localStorage.getItem('token')) {
+        next()
+      } else {
+        next('/login')
+      }
+    }
+  },
+  {
     path: '/print',
     name: 'print',
-    component: PrintView
+    component: PrintView,
+    beforeEnter: (to, from, next) => {
+      if(localStorage.getItem('token')) {
+        next()
+      } else {
+        next('/login')
+      }
+    }
   }
 ]
 

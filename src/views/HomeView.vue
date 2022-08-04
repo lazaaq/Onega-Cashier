@@ -178,18 +178,11 @@ export default {
     CashierTab,
     CheckoutModal
   },
-  async mounted() {
+  mounted() {
     // adding bootstrap javascript to the page (inside tag head)
     let bootstrapJS = document.createElement('script')
     bootstrapJS.setAttribute('src', 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js')
     document.head.appendChild(bootstrapJS)
-
-    // get customers data
-    await axios.get('customers').then(response => {
-      this.customersData = response.data.data
-    }).catch(error => {
-      console.log(error)
-    })
 
     // jquery
     window.onclick = function() {
@@ -199,8 +192,23 @@ export default {
         );
       }
     }
+
+    this.init()
   },
+  // async created() {
+  //   // get customers data
+    
+  // },
   methods: {
+    init: async function() {
+      let res = null
+      await axios.get('customers').then(response => {
+        res = response
+      }).catch(error => {
+        console.log(error)
+      })
+      this.customersData = res.data.data
+    },
     updateActiveTab: function (newActiveTab) {
       this.activeTab = newActiveTab
     },
