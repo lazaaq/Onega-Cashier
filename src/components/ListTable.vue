@@ -84,20 +84,16 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import jQuery from "jquery";
 const $ = jQuery;
 window.$ = $;
 
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'ListTable',
   async mounted() {
-    await axios.get('products').then(response => {
-      this.products = response.data.data
-    }).catch(error => {
-      console.log(error)
-    })
-
     let i = 0
     this.products.forEach((product) => { 
       $('#search-sku-code-' + i).value = product.sku_code
@@ -178,6 +174,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['products']),
     discountItem() {
       let discounts = []
       this.items.forEach((item) => {
@@ -235,7 +232,6 @@ export default {
   ],
   data() {
     return {
-      products: null,
       searchSkuCode: '',
       searchProductName: '',
     }

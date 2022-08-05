@@ -23,14 +23,14 @@ export default {
   methods: {
     logout: async function() {
       console.log(localStorage.getItem('token'))
-      await axios.post('logout').then((response) => {
+      await axios.post('logout', this.$config).then(() => {
         localStorage.removeItem('token');
-        console.log(response)
+        this.$router.push('/login');
+        this.$store.dispatch('user', null);
       }).catch(error => {
         console.log(error);
       });
       console.log(localStorage.getItem('token'))
-      this.$router.push('/login');
     }
   },
   data() {

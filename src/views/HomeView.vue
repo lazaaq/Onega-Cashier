@@ -32,7 +32,7 @@
                     v-for="(customer, index) in filteredCustomersData"
                     :key="'customer_' + index"
                     @click="selectCustomer(customer)"
-                  >
+                >
                     <div class="d-flex align-items-center">
                       <div class="customer-name me-5">
                         {{ customer.name }}
@@ -159,6 +159,8 @@ import jQuery from "jquery";
 const $ = jQuery;
 window.$ = $;
 
+import { mapGetters } from 'vuex';
+
 import MyNavbar from '@/components/MyNavbar.vue'
 import TextField from '@/components/form/TextField.vue'
 import ButtonField from '@/components/form/ButtonField.vue'
@@ -192,23 +194,8 @@ export default {
         );
       }
     }
-
-    this.init()
   },
-  // async created() {
-  //   // get customers data
-    
-  // },
   methods: {
-    init: async function() {
-      let res = null
-      await axios.get('customers').then(response => {
-        res = response
-      }).catch(error => {
-        console.log(error)
-      })
-      this.customersData = res.data.data
-    },
     updateActiveTab: function (newActiveTab) {
       this.activeTab = newActiveTab
     },
@@ -375,10 +362,11 @@ export default {
       })
     },
     searchCustomer: function () {
-      console.log('search')
+      console.log(this.user)
     },
   },
   computed: {
+    ...mapGetters(['user', 'customers']),
     detailOrder() {
       let detailOrder = {
         subtotal: 0,
@@ -420,9 +408,9 @@ export default {
     filteredCustomersData() {
       let query = this.searchCustomerQuery.toLowerCase()
       if (this.searchCustomerQuery == '') {
-        return this.customersData
+        return this.customers
       }
-      return this.customersData.filter(function(el) {
+      return this.customers.filter(function(el) {
         return el.name.toLowerCase().includes(query)
       });
     },
@@ -448,7 +436,6 @@ export default {
       activeTab: 1,
       idCheckoutModal: 'idCheckoutModal',
       searchCustomerQuery: '',
-      customersData: [],
       selectedCustomer: null,
       trashIcon: require('@/assets/icon/trash.png'),
       plusIcon: require('@/assets/icon/plus.png'),

@@ -2,6 +2,17 @@
   <router-view/>
 </template>
 
+<script>
+// import axios from 'axios'
+
+export default {
+  name: 'App',
+  async created() {
+    
+  }
+}
+</script>
+
 <style>
 @font-face {
   font-family: "Averta Demo";

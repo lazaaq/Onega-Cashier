@@ -77,13 +77,30 @@ export default {
       }
 
       // login
-      await axios.post('login', loginData).then(response => {
-        localStorage.setItem('token', response.data.access_token)
-      }).catch(error => {
+      const response = await axios.post('login', loginData).catch(error => {
         console.log(error);
+        return
       });
-      // this.$router.push('/')
-      window.location.href = this.$appHost + '/'
+      
+      // set token
+      localStorage.setItem('token', response.data.access_token)
+
+      // push to dashboard
+      this.$router.push('/')
+
+      // set user
+      this.$store.dispatch('user', response.data.data)
+
+      // get products
+      const productsResponse = await axios.get('products')
+      let products = productsResponse.data.data
+      this.$store.dispatch('products', products)
+
+      // get customers
+      const customersResponse = await axios.get('customers')
+      let customers = customersResponse.data.data
+      this.$store.dispatch('customers', customers)
+
     }
   },
   props: [
