@@ -77,29 +77,40 @@ export default {
       }
 
       // login
-      const response = await axios.post('login', loginData).catch(error => {
+      let token = null
+      await axios.post('login', loginData).then(response => {
+        localStorage.setItem('token', response.data.access_token)
+        console.log(localStorage.getItem('token'))
+        token = response.data.access_token
+        this.$store.dispatch('user', response.data.data)
+        this.$router.push('/')
+      }).catch(error => {
         console.log(error);
         return
       });
-      
-      // set token
-      localStorage.setItem('token', response.data.access_token)
-
-      // push to dashboard
-      this.$router.push('/')
-
-      // set user
-      this.$store.dispatch('user', response.data.data)
 
       // get products
-      const productsResponse = await axios.get('products')
-      let products = productsResponse.data.data
-      this.$store.dispatch('products', products)
+      await axios.get('products', {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      }).then(response => {
+        let products = response.data.data
+        this.$store.dispatch('products', products)
+      }).catch(error => {
+        console.log(error);
+        return
+      });
 
       // get customers
-      const customersResponse = await axios.get('customers')
-      let customers = customersResponse.data.data
-      this.$store.dispatch('customers', customers)
+      await axios.get('customers', {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      }).then(response => {
+        let customers = response.data.data
+        this.$store.dispatch('customers', customers)
+      })
 
     }
   },

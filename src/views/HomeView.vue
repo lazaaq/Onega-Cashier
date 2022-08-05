@@ -194,8 +194,23 @@ export default {
         );
       }
     }
+
+    if(this.customers.length == 0) {
+      this.getCustomers()
+    }
   },
   methods: {
+    getCustomers: async function() {
+      await axios.get('customers', {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }).then(response => {
+        this.$store.commit('customers', response.data.data)
+      }).catch(error => {
+        console.log(error)
+      })
+    },
     updateActiveTab: function (newActiveTab) {
       this.activeTab = newActiveTab
     },
@@ -280,14 +295,18 @@ export default {
         items: items,
       }
       let newInvoice = null
-      await axios.post('invoices/make_invoice', invoice).then((response) => {
+      await axios.post('invoices/make_invoice', invoice, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }).then((response) => {
         newInvoice = response.data.data
       }).catch(error => {
         console.log(error)
       })
 
       // redirect
-      window.location.href = this.$appHost + '/print?id=' + newInvoice.id
+      window.location.href = this.$appHost + 'print?id=' + newInvoice.id
     },
     formatRupiah: function (angka) {
       angka = angka.toString()
@@ -317,7 +336,11 @@ export default {
       this.selectedCustomer = customer
       $('#search').val(this.selectedCustomer.name)
 
-      await axios.get('carts/by_customer/' + this.selectedCustomer.id).then(response => {
+      await axios.get('carts/by_customer/' + this.selectedCustomer.id, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }).then(response => {
         let data = response.data.data
         if(data == null) {
           let cart = {

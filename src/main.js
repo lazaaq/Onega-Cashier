@@ -11,12 +11,7 @@ import './assets/css/main.css'
 
 const app = createApp(App)
 
-app.config.globalProperties.$appHost = 'http://localhost:8080/#';
-// app.config.globalProperties.$config = {
-//   headers: {
-//     Authorization: 'Bearer ' + localStorage.getItem('token')
-//   }
-// }
+app.config.globalProperties.$appHost = 'http://localhost:8080/#/';
 
 app.use(router)
 app.use(store)

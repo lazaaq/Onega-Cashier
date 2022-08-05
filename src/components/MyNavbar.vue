@@ -22,8 +22,11 @@ export default {
   name: 'MyNavbar',
   methods: {
     logout: async function() {
-      console.log(localStorage.getItem('token'))
-      await axios.post('logout', this.$config).then(() => {
+      await axios.post('logout', null, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }).then(() => {
         localStorage.removeItem('token');
         this.$router.push('/login');
         this.$store.dispatch('user', null);
