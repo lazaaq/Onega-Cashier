@@ -53,12 +53,12 @@
         <td>{{ item.product ? (item.product.sku_code ? item.product.sku_code : 'null') : 'null' }}</td>
         <td>
           {{ item.product ? (item.product.product_name ? item.product.product_name : 'null') : 'null' }}
-          <br><span class="font-bold font-italic">Promo Merdeka 5%</span>
+          <br><span class="font-bold font-italic">{{ item.product ? (item.product.discount ? item.product.discount.name : '') : '' }}</span>
         </td>
-        <td>{{ item.product ? (item.product.unit_price ? item.product.unit_price : 'null') : 'null' }}</td>
+        <td>{{ item.product ? (item.product.unit_price ? formatRupiah(item.product.unit_price) : 'null') : 'null' }}</td>
         <td>{{ item.quantity }}</td>
-        <td>{{ item.product ? (item.product.discount ? (item.product.discount.discount_amount ? item.product.discount.discount_amount : 'null') : 'null') : 'null' }}</td>
-        <td>Rp{{ item.subtotal ? item.subtotal : 0 }}</td>
+        <td>{{ getDiscount(item) }}</td>
+        <td>{{ item.subtotal ? formatRupiah(item.subtotal) : formatRupiah(0) }}</td>
       </tr>
       <tr class="border-bottom">
         <td></td>
@@ -67,7 +67,7 @@
         <td></td>
         <td></td>
         <td>Subtotal :</td>
-        <td>Rp{{ invoice ? invoice.subtotal : 0 }}</td>
+        <td>{{ invoice ? formatRupiah(invoice.subtotal) : 0 }}</td>
       </tr>
       <tr class="total-price">
         <td></td>
@@ -76,7 +76,7 @@
         <td></td>
         <td></td>
         <td class="font-italic">Total(IDR) : </td>
-        <td class="font-italic">Rp{{ invoice ? invoice.total_price : 0 }}</td>
+        <td class="font-italic">{{ invoice ? formatRupiah(invoice.total_price) : 0 }}</td>
       </tr>
     </table>
   </div>
@@ -86,7 +86,7 @@
       Terbilang:
     </div>
     <div class="terbilang-value">
-      Delapan Ratus Lima Belas Ribu Rupiah
+      Dua Ratus Dua Puluh Dua Ribu Empat Ratus Rupiah
     </div>
     <div class="syarat">
       *Syarat syarat dan ketentuan lainnya dalam pelaksanaan pekerjaan tertuang dalam lampiran order kerja ini yang merupakan satu kesatuan yang tidak terpisahkan.
@@ -140,11 +140,48 @@ import axios from 'axios'
 export default {
   name: 'PrintView',
   async mounted() {
-    await axios.get('invoices/' + this.id).then(response => {
+    await axios.get('invoices/' + this.id, {
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
+    }).then(response => {
       this.invoice = response.data.data;
       this.invoiceItems = this.invoice.invoice_items
-      console.log(this.invoice)
+      // console.log(this.invoice)
     });
+    // console.log(this.invoice)
+  },
+  methods: {
+    getDiscount: function(item) {
+      if(item && item.product && item.product.discount) {
+        if(item.product.discount.type == 'percent' && item.product.discount.discount_percent) {
+          let discount = (item.product.discount.discount_percent * item.product.unit_price / 100) * item.quantity
+          return this.formatRupiah(discount)
+        } else if (item.product.discount.type == 'amount' && item.product.discount.discount_amount) {
+          let discount = (item.product.discount.discount_amount) * item.quantity
+          return this.formatRupiah(discount)
+        }
+      }
+      return this.formatRupiah(0)
+    },
+    formatRupiah: function (angka) {
+      angka = angka.toString()
+      
+      let number_string = angka.replace(/[^,\d]/g, '').toString()
+      let split   		= number_string.split(',')
+      let sisa     		= split[0].length % 3
+      let rupiah     		= split[0].substr(0, sisa)
+      let ribuan     		= split[0].substr(sisa).match(/\d{3}/gi)
+    
+      // tambahkan titik jika yang di input sudah menjadi angka ribuan
+      if(ribuan){
+        let separator = sisa ? '.' : ''
+        rupiah += separator + ribuan.join('.')
+      }
+    
+      rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah
+      return rupiah ? 'Rp' + rupiah : 'Rp0'
+    },
   },
   data() {
     return {

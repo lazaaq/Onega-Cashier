@@ -408,6 +408,7 @@ export default {
           detailOrder.discount += item.quantity * ((item.product.discount.discountPercent ? item.product.discount.discountPercent : 0) * (item.product.unitPrice ? item.product.unitPrice : 0) / 100)
         }
       })
+      detailOrder.subtotal -= detailOrder.discount
       detailOrder.tax = detailOrder.subtotal * 0.11
       detailOrder.totalPrice = detailOrder.subtotal - detailOrder.discount + detailOrder.tax
       return detailOrder
