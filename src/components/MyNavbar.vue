@@ -2,8 +2,8 @@
   <div class="mynavbar">
     <header class="d-flex">
       <div class="header-left">
-        <div class="header-name">Siti Rahmatullah</div>
-        <div class="header-date">Kamis, 01 Juli 2022. 15:05 WIB</div>
+        <div class="header-name">{{ user ? user.name : getUser() }}</div>
+        <div class="header-date">{{ getTodayDate() }}</div>
       </div>
       <div class="header-right">
         <button class="p-0 border-0 bg-white" id="button-logout" @click="logout()">
@@ -17,6 +17,7 @@
 
 <script>
 import axios from 'axios'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'MyNavbar',
@@ -33,8 +34,44 @@ export default {
       }).catch(error => {
         console.log(error);
       });
-      console.log(localStorage.getItem('token'))
+    },
+    getTodayDate: function () {
+      let hariArray = ['Minggu','Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+      let bulanArray = ['Januari','Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+      let date = new Date()
+
+      let menit = date.getMinutes()
+      let jam = date.getHours()
+      let hariNumber = date.getDay()
+      let hari = hariArray[hariNumber]
+      let tanggal = date.getDate()
+      let bulanNumber = date.getMonth()
+      let bulan = bulanArray[bulanNumber]
+      let tahun = date.getFullYear()
+
+      if(tanggal < 10) {
+        tanggal = '0' + tanggal
+      }
+      if(menit < 10) {
+        menit = '0' + menit
+      }
+      return `${hari}, ${tanggal} ${bulan} ${tahun}. ${jam}:${menit} WIB`
+    },
+    getUser: async function() {
+      let token = localStorage.getItem('token')
+      await axios.get('user', {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      }).then(response => {
+        this.$store.dispatch('user', response.data.data)
+      }).catch(error => {
+        console.log(error)
+      })
     }
+  },
+  computed: {
+    ...mapGetters(['user'])
   },
   data() {
     return {
