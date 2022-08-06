@@ -147,9 +147,7 @@ export default {
     }).then(response => {
       this.invoice = response.data.data;
       this.invoiceItems = this.invoice.invoice_items
-      // console.log(this.invoice)
     });
-    // console.log(this.invoice)
   },
   methods: {
     getDiscount: function(item) {

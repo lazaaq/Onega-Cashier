@@ -15,7 +15,7 @@
             Customer
           </div>
           <div class="d-flex w-100">
-            <div class="pr-2" style="width: 90%;">
+            <div class="pr-2" style="width: 100%;">
               <div>
                 <TextField 
                   name="search" 
@@ -47,12 +47,6 @@
                   </li>
                 </ul>
               </div>
-            </div>
-            <div class="" style="width: 10%;">
-              <ButtonField 
-                text='Cari'
-                @click="searchCustomer()"
-              />
             </div>
           </div>
           <hr class="my-2">
@@ -163,7 +157,6 @@ import { mapGetters } from 'vuex';
 
 import MyNavbar from '@/components/MyNavbar.vue'
 import TextField from '@/components/form/TextField.vue'
-import ButtonField from '@/components/form/ButtonField.vue'
 import ListTable from '@/components/ListTable.vue'
 import SimpleButton from '@/components/SimpleButton.vue'
 import CashierTab from '@/components/CashierTab.vue'
@@ -174,7 +167,6 @@ export default {
   components: {
     MyNavbar,
     TextField,
-    ButtonField,
     ListTable,
     SimpleButton,
     CashierTab,
@@ -227,7 +219,6 @@ export default {
       }
       this.tbody.push(newCart)
       this.activeTab = tabs
-      console.log(this.tbody)
     },
     closeTab: function (index) {
       if (index + 1 <= this.activeTab) {
@@ -379,13 +370,9 @@ export default {
           })
           this.tbody[this.activeTab - 1] = cart
         }
-        console.log(this.tbody)
       }).catch(error => {
         console.log(error)
       })
-    },
-    searchCustomer: function () {
-      console.log(this.user)
     },
   },
   computed: {

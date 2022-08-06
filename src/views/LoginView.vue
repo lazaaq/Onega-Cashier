@@ -80,7 +80,6 @@ export default {
       let token = null
       await axios.post('login', loginData).then(response => {
         localStorage.setItem('token', response.data.access_token)
-        console.log(localStorage.getItem('token'))
         token = response.data.access_token
         this.$store.dispatch('user', response.data.data)
         this.$router.push('/')
