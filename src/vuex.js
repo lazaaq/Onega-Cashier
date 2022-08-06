@@ -5,7 +5,6 @@ const store = createStore({
     return {
       user: null,
       products: [],
-      customers: [],
     }
   },
   getters: {
@@ -15,9 +14,6 @@ const store = createStore({
     products: (state) => {
       return state.products
     },
-    customers: (state) => {
-      return state.customers
-    }
   },
   actions: {
     user(context, user) {
@@ -26,9 +22,6 @@ const store = createStore({
     products(context, products) {
       context.commit('products', products)
     },
-    customers(context, customers) {
-      context.commit('customers', customers)
-    }
   },
   mutations: {
     user(state, user) {
@@ -36,9 +29,6 @@ const store = createStore({
     },
     products(state, products) {
       state.products = products
-    },
-    customers(state, customers) {
-      state.customers = customers
     },
   }
 })

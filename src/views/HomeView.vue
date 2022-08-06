@@ -29,7 +29,7 @@
                 <ul>
                   <li 
                     class="py-1"
-                    v-for="(customer, index) in filteredCustomersData"
+                    v-for="(customer, index) in customers"
                     :key="'customer_' + index"
                     @click="selectCustomer(customer)"
                 >
@@ -186,23 +186,8 @@ export default {
         );
       }
     }
-
-    if(this.customers.length == 0) {
-      this.getCustomers()
-    }
   },
   methods: {
-    getCustomers: async function() {
-      await axios.get('customers', {
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token')
-        }
-      }).then(response => {
-        this.$store.commit('customers', response.data.data)
-      }).catch(error => {
-        console.log(error)
-      })
-    },
     updateActiveTab: function (newActiveTab) {
       this.activeTab = newActiveTab
     },
@@ -320,8 +305,9 @@ export default {
     focusInput: function () {
       document.getElementById('search-customer').style.display = 'block'
     },
-    keyupSearchCustomer: function (id) {
+    keyupSearchCustomer: async function (id) {
       this.searchCustomerQuery = $('#' + id).val()
+      await this.getCustomer(this.searchCustomerQuery)
     },
     selectCustomer: async function (customer) {
       this.selectedCustomer = customer
@@ -374,9 +360,20 @@ export default {
         console.log(error)
       })
     },
+    getCustomer: async function(query) {
+      await axios.get('customers/search/' + query, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }).then((response) => {
+        this.customers = response.data
+      }).catch(error => {
+        console.log(error)
+      })
+    }
   },
   computed: {
-    ...mapGetters(['user', 'customers']),
+    ...mapGetters(['user']),
     detailOrder() {
       let detailOrder = {
         subtotal: 0,
@@ -416,15 +413,7 @@ export default {
       });
       return subtotal;
     },
-    filteredCustomersData() {
-      let query = this.searchCustomerQuery.toLowerCase()
-      if (this.searchCustomerQuery == '') {
-        return this.customers
-      }
-      return this.customers.filter(function(el) {
-        return el.name.toLowerCase().includes(query)
-      });
-    },
+    
   },
   data() {
     return {
@@ -447,6 +436,7 @@ export default {
       activeTab: 1,
       idCheckoutModal: 'idCheckoutModal',
       searchCustomerQuery: '',
+      customers: [],
       selectedCustomer: null,
       trashIcon: require('@/assets/icon/trash.png'),
       plusIcon: require('@/assets/icon/plus.png'),

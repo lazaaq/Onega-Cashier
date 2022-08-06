@@ -100,17 +100,6 @@ export default {
         console.log(error);
         return
       });
-
-      // get customers
-      await axios.get('customers', {
-        headers: {
-          Authorization: 'Bearer ' + token
-        }
-      }).then(response => {
-        let customers = response.data.data
-        this.$store.dispatch('customers', customers)
-      })
-
     }
   },
   props: [
