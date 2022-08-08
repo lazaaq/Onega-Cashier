@@ -1,11 +1,11 @@
 <template>
   <div class="textfield" style="width: 100%">
-    <input 
-      type="text" 
+    <input
       :name="name" 
       :id="id" 
-      style="width: 100%;" 
+      :type="type ? type : 'text'"
       :placeholder="placeholder" 
+      style="width: 100%;" 
       @focus="focusInput()"
       @keyup="keyupInput()"
     />
@@ -23,7 +23,8 @@ export default {
     'placeholder',
     'name',
     'id',
-    'disabled'
+    'disabled',
+    'type'
   ],
   methods: {
     focusInput() {

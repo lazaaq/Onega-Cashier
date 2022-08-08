@@ -27,12 +27,16 @@
           placeholder="Email" 
           class="mb-2"
         />
-        <TextField 
-          name="password" 
-          id="password" 
-          placeholder="Password" 
-          class="mb-2"
-        />
+        <div class="d-flex">
+          <TextField 
+            name="password" 
+            id="password"
+            type="password"
+            placeholder="Password" 
+            class="mb-2"
+          />
+          <img :src="eyeOpenLogo" :style="'margin-left: -30px; margin-top: -7px'" @click="togglePassword()" id="toggle-password">
+        </div>
         <TextField 
           name="cashier" 
           id="cashier" 
@@ -100,6 +104,14 @@ export default {
         console.log(error);
         return
       });
+    },
+    togglePassword: function() {
+      let password = document.getElementById('password')
+      let togglePassword = document.getElementById('toggle-password')
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password'
+      password.setAttribute('type', type)
+      const eyeLogo = togglePassword.getAttribute('src') === this.eyeOpenLogo ? this.eyeClosedLogo : this.eyeOpenLogo
+      togglePassword.setAttribute('src', eyeLogo)
     }
   },
   props: [
@@ -109,7 +121,9 @@ export default {
     return {
       email: '',
       password: '',
-      cashier: ''
+      cashier: '',
+      eyeOpenLogo: require('@/assets/icon/eye-open.svg'),
+      eyeClosedLogo: require('@/assets/icon/eye-closed.svg')
     }
   }
 }
