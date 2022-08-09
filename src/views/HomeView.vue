@@ -283,6 +283,15 @@ export default {
 
       // redirect
       window.location.href = this.$appHost + 'print?id=' + newInvoice.id
+      // let prtContent = document.getElementById("invoice-page");
+      // let WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+      // WinPrint.document.write('<html><head><title>Print Page</title><link rel="stylesheet" type="text/css" href="@/assets/css/print.css"></head><body>');
+      // WinPrint.document.write(prtContent.innerHTML);
+      // WinPrint.document.write('</body></html>');
+      // WinPrint.document.close();
+      // WinPrint.focus();
+      // WinPrint.print();
+      // WinPrint.close();
     },
     formatRupiah: function (angka) {
       angka = angka.toString()

@@ -1,135 +1,137 @@
 <template>
-  <div class="header">
-    <div class="onega-symbol">
-      <img :src="onegaLogo">
+  <div>
+    <div class="header">
+      <div class="onega-symbol">
+        <img :src="onegaLogo">
+      </div>
+      <div class="sales-order">
+        <span>Sales Order</span>
+      </div>
     </div>
-    <div class="sales-order">
-      <span>Sales Order</span>
-    </div>
-  </div>
 
-  <div class="description">
-    <div class="yth">
-      <div>Kepada</div>
-      <div class="font-bold">PT ONEGA</div>
-      <div>Amartha Safira C10/11, Krajan, Sepande,</div>
-      <div>Kec. Candi, Sidoarjo</div>
-      <div>+62 8123456789</div>
+    <div class="description">
+      <div class="yth">
+        <div>Kepada</div>
+        <div class="font-bold">PT ONEGA</div>
+        <div>Amartha Safira C10/11, Krajan, Sepande,</div>
+        <div>Kec. Candi, Sidoarjo</div>
+        <div>+62 8123456789</div>
+      </div>
+      <div class="invoice-detail">
+        <table>
+          <tr class="id-transaksi">
+            <td>ID Transaksi</td>
+            <td class="px-2">:</td>
+            <td class="font-bold font-italic">SO-31253</td>
+          </tr>
+          <tr class="id-transaksi">
+            <td>Date Issued</td>
+            <td class="px-2">:</td>
+            <td class="font-bold font-italic">01 Jan 2022</td>
+          </tr>
+          <tr class="id-transaksi">
+            <td>Invoice No</td>
+            <td class="px-2">:</td>
+            <td class="font-bold font-italic">12345</td>
+          </tr>
+        </table>
+      </div>
     </div>
-    <div class="invoice-detail">
-      <table>
-        <tr class="id-transaksi">
-          <td>ID Transaksi</td>
-          <td class="px-2">:</td>
-          <td class="font-bold font-italic">SO-31253</td>
+
+    <div class="invoice-items">
+      <table class="table-white">
+        <tr class="bg-white font-black border-bottom">
+          <th>No</th>
+          <th>SKU Code</th>
+          <th>Item</th>
+          <th>Price</th>
+          <th>Qty</th>
+          <th>Diskon</th>
+          <th>Subtotal</th>
         </tr>
-        <tr class="id-transaksi">
-          <td>Date Issued</td>
-          <td class="px-2">:</td>
-          <td class="font-bold font-italic">01 Jan 2022</td>
+        <tr v-for="(item, index) in invoiceItems" :key="index" class="border-bottom">
+          <td>{{ index + 1 }}</td>
+          <td>{{ item.product ? (item.product.sku_code ? item.product.sku_code : 'null') : 'null' }}</td>
+          <td>
+            {{ item.product ? (item.product.product_name ? item.product.product_name : 'null') : 'null' }}
+            <br><span class="font-bold font-italic">{{ item.product ? (item.product.discount ? item.product.discount.name : '') : '' }}</span>
+          </td>
+          <td>{{ item.product ? (item.product.unit_price ? formatRupiah(item.product.unit_price) : 'null') : 'null' }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ getDiscount(item) }}</td>
+          <td>{{ item.subtotal ? formatRupiah(item.subtotal) : formatRupiah(0) }}</td>
         </tr>
-        <tr class="id-transaksi">
-          <td>Invoice No</td>
-          <td class="px-2">:</td>
-          <td class="font-bold font-italic">12345</td>
+        <tr class="border-bottom">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>Subtotal :</td>
+          <td>{{ invoice ? formatRupiah(invoice.subtotal) : 0 }}</td>
+        </tr>
+        <tr class="total-price">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="font-italic">Total(IDR) : </td>
+          <td class="font-italic">{{ invoice ? formatRupiah(invoice.total_price) : 0 }}</td>
         </tr>
       </table>
     </div>
-  </div>
 
-  <div class="invoice-items">
-    <table class="table-white">
-      <tr class="bg-white font-black border-bottom">
-        <th>No</th>
-        <th>SKU Code</th>
-        <th>Item</th>
-        <th>Price</th>
-        <th>Qty</th>
-        <th>Diskon</th>
-        <th>Subtotal</th>
-      </tr>
-      <tr v-for="(item, index) in invoiceItems" :key="index" class="border-bottom">
-        <td>{{ index + 1 }}</td>
-        <td>{{ item.product ? (item.product.sku_code ? item.product.sku_code : 'null') : 'null' }}</td>
-        <td>
-          {{ item.product ? (item.product.product_name ? item.product.product_name : 'null') : 'null' }}
-          <br><span class="font-bold font-italic">{{ item.product ? (item.product.discount ? item.product.discount.name : '') : '' }}</span>
-        </td>
-        <td>{{ item.product ? (item.product.unit_price ? formatRupiah(item.product.unit_price) : 'null') : 'null' }}</td>
-        <td>{{ item.quantity }}</td>
-        <td>{{ getDiscount(item) }}</td>
-        <td>{{ item.subtotal ? formatRupiah(item.subtotal) : formatRupiah(0) }}</td>
-      </tr>
-      <tr class="border-bottom">
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>Subtotal :</td>
-        <td>{{ invoice ? formatRupiah(invoice.subtotal) : 0 }}</td>
-      </tr>
-      <tr class="total-price">
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td class="font-italic">Total(IDR) : </td>
-        <td class="font-italic">{{ invoice ? formatRupiah(invoice.total_price) : 0 }}</td>
-      </tr>
-    </table>
-  </div>
+    <div class="footer">
+      <div>
+        Terbilang:
+      </div>
+      <div class="terbilang-value">
+        Dua Ratus Dua Puluh Dua Ribu Empat Ratus Rupiah
+      </div>
+      <div class="syarat">
+        *Syarat syarat dan ketentuan lainnya dalam pelaksanaan pekerjaan tertuang dalam lampiran order kerja ini yang merupakan satu kesatuan yang tidak terpisahkan.
+      </div>
+      <hr class="my-1">
+      <div class="notes">
+        <div>
+          Notes:
+        </div>
+        <div class="notes-value">
+          {{ invoice ? invoice.notes : 'null' }}
+        </div>
+      </div>
+      <hr class="my-1">
+    </div>
 
-  <div class="footer">
-    <div>
-      Terbilang:
-    </div>
-    <div class="terbilang-value">
-      Dua Ratus Dua Puluh Dua Ribu Empat Ratus Rupiah
-    </div>
-    <div class="syarat">
-      *Syarat syarat dan ketentuan lainnya dalam pelaksanaan pekerjaan tertuang dalam lampiran order kerja ini yang merupakan satu kesatuan yang tidak terpisahkan.
-    </div>
-    <hr class="my-1">
-    <div class="notes">
-      <div>
-        Notes:
+    <div class="ttd pt-4">
+      <div class="rekanan me-5">
+        <div>
+          Order disetujui oleh Rekanan:
+        </div>
+        <div>
+          Vendor 1
+        </div>
+        <div class="line border-bottom">
+        </div>
       </div>
-      <div class="notes-value">
-        {{ invoice ? invoice.notes : 'null' }}
+      <div class="floo ms-5">
+        <div>
+          PT. FLoo Integra Digital
+        </div>
+        <div class="line border-bottom">
+          Iqbal Permana
+        </div>
       </div>
     </div>
-    <hr class="my-1">
-  </div>
 
-  <div class="ttd pt-4">
-    <div class="rekanan me-5">
-      <div>
-        Order disetujui oleh Rekanan:
+    <div class="copyright">
+      <div class="thanks-logo">
+        <img :src="thanksLogo">
       </div>
-      <div>
-        Vendor 1
+      <div class="contact">
+        onega@mail.com  |  +62 1234567891  |  onega.com
       </div>
-      <div class="line border-bottom">
-      </div>
-    </div>
-    <div class="floo ms-5">
-      <div>
-        PT. FLoo Integra Digital
-      </div>
-      <div class="line border-bottom">
-        Iqbal Permana
-      </div>
-    </div>
-  </div>
-
-  <div class="copyright">
-    <div class="thanks-logo">
-      <img :src="thanksLogo">
-    </div>
-    <div class="contact">
-      onega@mail.com  |  +62 1234567891  |  onega.com
     </div>
   </div>
 </template>
