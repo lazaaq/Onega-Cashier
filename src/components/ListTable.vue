@@ -1,86 +1,88 @@
 <template>
-  <table class="table">
-    <thead>
-      <tr>
-        <th v-for="(val, index) in thead" :key="index" scope="col">{{ val }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(val, index) in items" :key="index">
-        <td>
-          <div class="w-100">
-            <input
-              class="input search-sku-code"
-              :id="'search-sku-code-' + index"
-              @focus="focusSearchSkuCode(index)"
-              @keyup="setSearchSkuCode(index)"
-              v-model="val.product.skuCode"
-            />
-          </div>
-          <div :id="'search_sku_' + index" class="search-item1">
-            <ul>
-              <li 
-                v-for="(product, productIndex) in filteredProductsSku" 
-                :key="productIndex"
-                @click="addNewItem(product, index)"
-                >{{ product.sku_code }}
-              </li>
-            </ul>
-          </div>
-        </td>
-        <td>
-          <div class="w-100 d-flex">
-            <input
-              class="input search-product-name"
-              :id="'search-product-name-' + index"
-              @focus="focusSearchProductName(index)"
-              @keyup="setSearchProductName(index)"
-              v-model="val.product.productName"
-            />
-            <span class="item-promo">
-              {{ val.product ? (val.product.discount ? val.product.discount.name : '') : '' }}
-            </span>
-          </div>
-          <div :id="'search_item_' + index" class="search-item2">
-            <ul>
-              <li 
-                v-for="(product, productIndex) in filteredProductsItem" 
-                :key="productIndex"
-                @click="addNewItem(product, index)"
-                >{{ product.product_name }}
-              </li>
-            </ul>
-          </div>
-        </td>
-        <td>
-          <span id="price">{{ val.product ? (val.product.unitPrice ? formatRupiah(val.product.unitPrice) : 0) : 0 }}</span>
-        </td>
-        <td>
-          <div class="qty-wrap">
-            <span 
-              class="input qty" 
-              :id="'qty_' + index" 
-              role="textbox" 
-              contenteditable
-              @keyup="changeQty(index)"
-            > {{ val.quantity }}
-            </span>
-          </div>
-        </td>
-        <td>
-          <div class="diskon">
-            {{ formatRupiah(discountItem[index]) }}
-          </div>
-        </td>
-        <td class="d-flex align-items-center">
-          <span>{{ subtotalItems[index] ? formatRupiah(subtotalItems[index]) : 0 }}</span>
-          <button class="trash-btn" @click="deleteItem(index)">
-            <img :src="trashIcon">
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="overflow-auto">
+    <table class="table">
+      <thead>
+        <tr>
+          <th v-for="(val, index) in thead" :key="index" scope="col">{{ val }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(val, index) in items" :key="index">
+          <td>
+            <div class="w-100">
+              <input
+                class="input search-sku-code"
+                :id="'search-sku-code-' + index"
+                @focus="focusSearchSkuCode(index)"
+                @keyup="setSearchSkuCode(index)"
+                v-model="val.product.skuCode"
+              />
+            </div>
+            <div :id="'search_sku_' + index" class="search-item1">
+              <ul>
+                <li 
+                  v-for="(product, productIndex) in filteredProductsSku" 
+                  :key="productIndex"
+                  @click="addNewItem(product, index)"
+                  >{{ product.sku_code }}
+                </li>
+              </ul>
+            </div>
+          </td>
+          <td>
+            <div class="w-100 d-flex">
+              <input
+                class="input search-product-name"
+                :id="'search-product-name-' + index"
+                @focus="focusSearchProductName(index)"
+                @keyup="setSearchProductName(index)"
+                v-model="val.product.productName"
+              />
+              <span class="item-promo">
+                {{ val.product ? (val.product.discount ? val.product.discount.name : '') : '' }}
+              </span>
+            </div>
+            <div :id="'search_item_' + index" class="search-item2">
+              <ul>
+                <li 
+                  v-for="(product, productIndex) in filteredProductsItem" 
+                  :key="productIndex"
+                  @click="addNewItem(product, index)"
+                  >{{ product.product_name }}
+                </li>
+              </ul>
+            </div>
+          </td>
+          <td>
+            <span id="price">{{ val.product ? (val.product.unitPrice ? formatRupiah(val.product.unitPrice) : 0) : 0 }}</span>
+          </td>
+          <td>
+            <div class="qty-wrap">
+              <span 
+                class="input qty" 
+                :id="'qty_' + index" 
+                role="textbox" 
+                contenteditable
+                @keyup="changeQty(index)"
+              > {{ val.quantity }}
+              </span>
+            </div>
+          </td>
+          <td>
+            <div class="diskon">
+              {{ formatRupiah(discountItem[index]) }}
+            </div>
+          </td>
+          <td class="d-flex align-items-center">
+            <span>{{ subtotalItems[index] ? formatRupiah(subtotalItems[index]) : 0 }}</span>
+            <button class="trash-btn" @click="deleteItem(index)">
+              <img :src="trashIcon">
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -255,6 +257,10 @@ export default {
 </script>
 
 <style>
+.overflow-auto {
+  max-height: 60vh;
+  overflow-y: auto;
+}
 .table {
   font-size: 11px;
   margin-bottom: 0.5vh;
@@ -266,7 +272,7 @@ export default {
   padding: 1vh 1vw;
 }
 .table td {
-  padding: 0.75vh 1vw;
+  padding: 0.65vh 1vw!important;
 }
 .table .input {
   border: none;
