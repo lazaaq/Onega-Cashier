@@ -22,17 +22,17 @@
           <tr class="id-transaksi">
             <td>ID Transaksi</td>
             <td class="px-2">:</td>
-            <td class="font-bold font-italic">SO-31253</td>
+            <td class="font-bold font-italic">{{ invoice ? invoice.id : '' }}</td>
           </tr>
           <tr class="id-transaksi">
             <td>Date Issued</td>
             <td class="px-2">:</td>
-            <td class="font-bold font-italic">01 Jan 2022</td>
+            <td class="font-bold font-italic">{{ invoice ? getDateFromTimestamps(invoice.created_at) : '' }}</td>
           </tr>
           <tr class="id-transaksi">
             <td>Invoice No</td>
             <td class="px-2">:</td>
-            <td class="font-bold font-italic">12345</td>
+            <td class="font-bold font-italic">{{ invoice ? getInvoiceNumber(invoice.created_at) : '' }}</td>
           </tr>
         </table>
       </div>
@@ -182,6 +182,28 @@ export default {
       rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah
       return rupiah ? 'Rp' + rupiah : 'Rp0'
     },
+    getDateFromTimestamps: function(timestamps) {
+      let date = new Date(timestamps)
+      let bulanArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Des']
+      let tanggal = date.getDate()
+      let bulan = bulanArray[date.getMonth()]
+      let tahun = date.getFullYear()
+      return tanggal + ' ' + bulan + ' ' + tahun
+    },
+    getInvoiceNumber: function(timestamps) {
+      let date = new Date(timestamps)
+      let tanggal = date.getDate()
+      if(tanggal < 10) {
+        tanggal = '0' + tanggal
+      }
+      let bulan = date.getMonth() + 1
+      if(bulan < 10) {
+        bulan = '0' + bulan
+      }
+      let tahun = date.getFullYear().toString().slice(-2)
+      let invoiceId = this.invoice.id
+      return `${invoiceId}${tanggal}${bulan}${tahun}`
+    }
   },
   data() {
     return {

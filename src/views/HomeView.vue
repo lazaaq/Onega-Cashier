@@ -145,6 +145,7 @@
           :items="tbody[activeTab-1].items"
           :detailOrder="detailOrder"
           :subtotalItems="subtotalItems"
+          :invoice="invoice"
           @print="print($event)"
         />
       </div>

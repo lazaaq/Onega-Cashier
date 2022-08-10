@@ -6,7 +6,7 @@
           <div class="d-flex align-items-center">
             <div class="my-modal-title">ONEGA Store</div>
             <div class="ms-auto">
-              <div class="nama-kasir">Siti Rahmatullah</div>
+              <div class="nama-kasir">{{ user ? user.name : 'Belum Login' }}</div>
               <div class="cashier">Cashier</div>
             </div>
           </div>
@@ -17,7 +17,7 @@
                 ID Transaksi
               </div>
               <div class="description-value">
-                ID-3154
+                {{ invoice ? invoice.id : '' }}
               </div>
             </div>
             <div class="me-4">
@@ -25,7 +25,7 @@
                 Date
               </div>
               <div class="description-value">
-                01-01-2022
+                {{ invoice ? getDateFromTimestamps(invoice.created_at) : '' }}
               </div>
             </div>
             <div>
@@ -33,7 +33,7 @@
                 Invoice Number
               </div>
               <div class="description-value">
-                12345
+                {{ invoice ? getInvoiceNumber(invoice.created_at) : '' }}
               </div>
             </div>
           </div>
@@ -154,6 +154,8 @@ import jQuery from "jquery";
 const $ = jQuery;
 window.$ = $;
 
+import { mapGetters } from "vuex";
+
 export default {
   name: 'CheckoutModal',
   methods: {
@@ -182,8 +184,31 @@ export default {
       rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah
       return rupiah ? 'Rp' + rupiah : 'Rp0'
     },
+    getDateFromTimestamps: function(timestamps) {
+      let date = new Date(timestamps)
+      let bulanArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Des']
+      let tanggal = date.getDate()
+      let bulan = bulanArray[date.getMonth()]
+      let tahun = date.getFullYear()
+      return tanggal + ' ' + bulan + ' ' + tahun
+    },
+    getInvoiceNumber: function(timestamps) {
+      let date = new Date(timestamps)
+      let tanggal = date.getDate()
+      if(tanggal < 10) {
+        tanggal = '0' + tanggal
+      }
+      let bulan = date.getMonth() + 1
+      if(bulan < 10) {
+        bulan = '0' + bulan
+      }
+      let tahun = date.getFullYear().toString().slice(-2)
+      let invoiceId = this.invoice.id
+      return `${invoiceId}${tanggal}${bulan}${tahun}`
+    }
   },
   computed: {
+    ...mapGetters(['user']),
     discountItem() {
       let discounts = []
       this.items.forEach((item) => {
@@ -217,7 +242,8 @@ export default {
     'thead',
     'items',
     'detailOrder',
-    'subtotalItems'
+    'subtotalItems',
+    'invoice'
   ],
   data() {
     return {
