@@ -305,6 +305,19 @@ export default {
       // redirect
       let routeData = this.$router.resolve({name: 'print', query: {id: this.invoice.id}});
       window.open(routeData.href, '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+
+      // remove all list items from cart
+      let newCart = {
+        id: null,
+        customer_id: null,
+        subtotal: 0,
+        discount: 0,
+        tax: 0,
+        total_price: 0,
+        notes: 'notes',
+        items: [],
+      }
+      this.tbody[this.activeTab - 1] = newCart
     },
     formatRupiah: function (angka) {
       angka = angka.toString()
@@ -414,7 +427,7 @@ export default {
       let tahun = date.getFullYear().toString().slice(-2)
       let invoiceId = this.invoice.id
       return `${invoiceId}${tanggal}${bulan}${tahun}`
-    }
+    },
   },
   computed: {
     ...mapGetters(['user']),

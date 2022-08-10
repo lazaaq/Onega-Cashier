@@ -87,7 +87,7 @@
         Terbilang:
       </div>
       <div class="terbilang-value">
-        Dua Ratus Dua Puluh Dua Ribu Empat Ratus Rupiah
+        {{ invoice ? terbilang(invoice.total_price) : '' }} Rupiah
       </div>
       <div class="syarat">
         *Syarat syarat dan ketentuan lainnya dalam pelaksanaan pekerjaan tertuang dalam lampiran order kerja ini yang merupakan satu kesatuan yang tidak terpisahkan.
@@ -203,6 +203,31 @@ export default {
       let tahun = date.getFullYear().toString().slice(-2)
       let invoiceId = this.invoice.id
       return `${invoiceId}${tanggal}${bulan}${tahun}`
+    },
+    terbilang: function(angka) {
+      var bilne=["","Satu","Dua","Tiga","Empat","Lima","Enam","Tujuh","Delapan","Sembilan","Sepuluh","Sebelas"];
+
+			if(angka < 12){
+				return bilne[angka];
+			} else if (angka < 20){
+				return this.terbilang(angka-10)+" Belas";
+			} else if (angka < 100){
+				return this.terbilang(Math.floor(parseInt(angka)/10))+" Puluh "+this.terbilang(parseInt(angka)%10);
+			} else if (angka < 200){
+				return "Seratus "+this.terbilang(parseInt(angka)-100);
+			} else if (angka < 1000){
+				return this.terbilang(Math.floor(parseInt(angka)/100))+" Ratus "+this.terbilang(parseInt(angka)%100);
+			} else if (angka < 2000){
+				return "Seribu "+this.terbilang(parseInt(angka)-1000);
+			} else if (angka < 1000000){
+				return this.terbilang(Math.floor(parseInt(angka)/1000))+" Ribu "+this.terbilang(parseInt(angka)%1000);
+			} else if (angka < 1000000000){
+				return this.terbilang(Math.floor(parseInt(angka)/1000000))+" Juta "+this.terbilang(parseInt(angka)%1000000);
+			} else if (angka < 1000000000000){
+				return this.terbilang(Math.floor(parseInt(angka)/1000000000))+" Milyar "+this.terbilang(parseInt(angka)%1000000000);
+			} else if (angka < 1000000000000000){
+				return this.terbilang(Math.floor(parseInt(angka)/1000000000000))+" Trilyun "+this.terbilang(parseInt(angka)%1000000000000);
+			}
     }
   },
   data() {
