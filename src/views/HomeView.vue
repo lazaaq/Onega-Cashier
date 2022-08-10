@@ -401,9 +401,12 @@ export default {
           detailOrder.discount += item.quantity * ((item.product.discount.discountPercent ? item.product.discount.discountPercent : 0) * (item.product.unitPrice ? item.product.unitPrice : 0) / 100)
         }
       })
-      detailOrder.subtotal -= detailOrder.discount
       detailOrder.tax = detailOrder.subtotal * 0.11
       detailOrder.totalPrice = detailOrder.subtotal - detailOrder.discount + detailOrder.tax
+      // if detailOrder.totalPrice is negative, set it to 0
+      if(detailOrder.totalPrice < 0) {
+        detailOrder.totalPrice = 0
+      }
       return detailOrder
     },
     subtotalItems() {
@@ -418,6 +421,10 @@ export default {
           }
         }
         let subtotalItem = (item.product.unitPrice - discount) * item.quantity
+        // if discount is bigger than the price, set total to 0
+        if(subtotalItem < 0) {
+          subtotalItem = 0
+        }
         subtotal.push(subtotalItem);
       });
       return subtotal;
