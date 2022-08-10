@@ -288,29 +288,23 @@ export default {
     },
     print: async function (notes) {
       // change notes in invoice
-      let param = {
-        notes: notes
-      }
-      await axios.put('invoices/' + this.invoice.id, param, {
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token')
+      if(notes) {
+        let param = {
+          notes: notes
         }
-      }).then((response) => {
-        console.log(response)
-      }).catch(error => {
-        console.log(error)
-      })
+        await axios.put('invoices/' + this.invoice.id, param, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
+        }).then((response) => {
+          console.log(response)
+        }).catch(error => {
+          console.log(error)
+        })
+      }
       // redirect
-      window.location.href = this.$appHost + 'print?id=1'
-      // let prtContent = document.getElementById("invoice-page");
-      // let WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
-      // WinPrint.document.write('<html><head><title>Print Page</title><link rel="stylesheet" type="text/css" href="@/assets/css/print.css"></head><body>');
-      // WinPrint.document.write(prtContent.innerHTML);
-      // WinPrint.document.write('</body></html>');
-      // WinPrint.document.close();
-      // WinPrint.focus();
-      // WinPrint.print();
-      // WinPrint.close();
+      let routeData = this.$router.resolve({name: 'print', query: {id: this.invoice.id}});
+      window.open(routeData.href, '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
     },
     formatRupiah: function (angka) {
       angka = angka.toString()
@@ -398,6 +392,28 @@ export default {
       }).catch(error => {
         console.log(error)
       })
+    },
+    getDateFromTimestamps: function(timestamps) {
+      let date = new Date(timestamps)
+      let bulanArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Des']
+      let tanggal = date.getDate()
+      let bulan = bulanArray[date.getMonth()]
+      let tahun = date.getFullYear()
+      return tanggal + ' ' + bulan + ' ' + tahun
+    },
+    getInvoiceNumber: function(timestamps) {
+      let date = new Date(timestamps)
+      let tanggal = date.getDate()
+      if(tanggal < 10) {
+        tanggal = '0' + tanggal
+      }
+      let bulan = date.getMonth() + 1
+      if(bulan < 10) {
+        bulan = '0' + bulan
+      }
+      let tahun = date.getFullYear().toString().slice(-2)
+      let invoiceId = this.invoice.id
+      return `${invoiceId}${tanggal}${bulan}${tahun}`
     }
   },
   computed: {
