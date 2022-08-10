@@ -130,8 +130,13 @@
               {{ formatRupiah(detailOrder.totalPrice) }}
             </div>
           </div>
-          <button class="checkout-btn" type="button" data-bs-toggle="modal" :data-bs-target="'#' + idCheckoutModal">
-            Checkout
+          <button 
+            class="checkout-btn" 
+            type="button" 
+            data-bs-toggle="modal" 
+            :data-bs-target="'#' + idCheckoutModal" 
+            @click="checkout()"
+            > Checkout
           </button>
         </div>
         <CheckoutModal 
@@ -249,7 +254,7 @@ export default {
         }
       }
     },
-    print: async function (notes) {
+    checkout: async function() {
       // store to make_invoice 
       let items = []
       let i = 0
@@ -267,22 +272,35 @@ export default {
         discount: this.detailOrder.discount,
         tax: this.detailOrder.tax,
         total_price: this.detailOrder.totalPrice,
-        notes: notes,
+        notes: '',
         items: items,
       }
-      let newInvoice = null
       await axios.post('invoices/make_invoice', invoice, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token')
         }
       }).then((response) => {
-        newInvoice = response.data.data
+        this.invoice = response.data.data
       }).catch(error => {
         console.log(error)
       })
-
+    },
+    print: async function (notes) {
+      // change notes in invoice
+      let param = {
+        notes: notes
+      }
+      await axios.put('invoices/' + this.invoice.id, param, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }).then((response) => {
+        console.log(response)
+      }).catch(error => {
+        console.log(error)
+      })
       // redirect
-      window.location.href = this.$appHost + 'print?id=' + newInvoice.id
+      window.location.href = this.$appHost + 'print?id=1'
       // let prtContent = document.getElementById("invoice-page");
       // let WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
       // WinPrint.document.write('<html><head><title>Print Page</title><link rel="stylesheet" type="text/css" href="@/assets/css/print.css"></head><body>');
@@ -454,6 +472,7 @@ export default {
       searchCustomerQuery: '',
       customers: [],
       selectedCustomer: null,
+      invoice: null,
       trashIcon: require('@/assets/icon/trash.png'),
       plusIcon: require('@/assets/icon/plus.png'),
       deleteIcon: require('@/assets/icon/delete-red.png'),
