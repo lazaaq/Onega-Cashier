@@ -21,28 +21,31 @@
         Enter your Email and password
       </div>
       <div class="wrap-form">
-        <TextField 
-          name="email" 
-          id="email" 
-          placeholder="Email" 
-          class="mb-2"
-        />
+        <input
+          type="text"
+          name="username"
+          id="username"
+          placeholder="Username"
+          class="mb-2 input"
+        >
         <div class="d-flex">
-          <TextField 
-            name="password" 
+          <input
+            type="text"
+            name="password"
             id="password"
-            type="password"
-            placeholder="Password" 
-            class="mb-2"
-          />
+            placeholder="Password"
+            class="mb-2 input"
+          >
           <img :src="eyeOpenLogo" :style="'margin-left: -30px; margin-top: -7px'" @click="togglePassword()" id="toggle-password">
         </div>
-        <TextField 
-          name="cashier" 
-          id="cashier" 
-          placeholder="Cashier" 
-          class="mb-2"
-        />
+        <input
+          type="text"
+          name="cashier"
+          id="cashier"
+          placeholder="Cashier"
+          class="mb-2 input"
+          :readonly="'isReadOnly'"
+        >
         <div class="d-flex align-items-center">
           <div class="time d-flex align-items-center">
             00:00:00
@@ -62,12 +65,10 @@
 <script>
 import axios from 'axios'
 
-import TextField from '@/components/form/TextField.vue'
 import ButtonField from '@/components/form/ButtonField.vue'
 
 export default {
   components: {
-    TextField,
     ButtonField
   },
   methods: {
@@ -197,5 +198,20 @@ export default {
 
 #cashier {
   background-color: rgba(0,0,0,0.1);
+}
+
+
+.input {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.8vh 0.3vw 0.8vh 0.3vw;
+  font-size: 12px;
+  width: 100%
+}
+.input::-webkit-input-placeholder {
+  font-size: 11px;
+  padding-left: 8px;
+}
+.disabled {
+  background-color: rgba(0,0,0,0.5)
 }
 </style>
