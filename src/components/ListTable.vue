@@ -58,14 +58,13 @@
           </td>
           <td>
             <div class="qty-wrap">
-              <span 
+              <input 
                 class="input qty" 
                 :id="'qty_' + index" 
-                role="textbox" 
-                contenteditable
-                @keyup="changeQty(index)"
-              > {{ val.quantity }}
-              </span>
+                role="textbox"
+                type="number"
+                v-model="val.quantity"
+              >
             </div>
           </td>
           <td>
@@ -345,5 +344,15 @@ export default {
 .trash-btn img{
   width: 10px;
   margin-left: 4px;
+}
+
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.input.qty {
+  width: 20px;
 }
 </style>

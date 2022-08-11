@@ -67,7 +67,6 @@
             :items="tbody[activeTab-1].items"
             :trashIcon="trashIcon"
             @deleteItem="deleteItem($event)"
-            @changeQty="changeQty($event)"
             @addNewItem="addNewItem($event)"
           />
           <div class="d-flex">
@@ -231,11 +230,6 @@ export default {
     },
     deleteItem: function (index) {
       this.tbody[this.activeTab - 1].items.splice(index, 1)
-    },
-    changeQty: function(param) {
-      let index = param.index
-      let value = param.value
-      this.tbody[this.activeTab - 1].items[index].quantity = value
     },
     addNewItem: function(param) {
       let product = param.product

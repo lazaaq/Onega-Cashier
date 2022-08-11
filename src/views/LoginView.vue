@@ -23,9 +23,9 @@
       <div class="wrap-form">
         <input
           type="text"
-          name="username"
-          id="username"
-          placeholder="Username"
+          name="email"
+          id="email"
+          placeholder="Email"
           class="mb-2 input"
         >
         <div class="d-flex">
@@ -136,7 +136,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .login-page {
   display: flex;
   width: 100vw;
