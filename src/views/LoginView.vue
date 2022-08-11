@@ -74,6 +74,11 @@ export default {
     login: async function() {
       this.email = document.getElementById('email').value;
       this.password = document.getElementById('password').value;
+      let validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+      if (!this.email.match(validRegex)) {
+        alert("Invalid email address!");
+        return 
+      }
       
       let loginData = {
         email: this.email,
@@ -87,8 +92,9 @@ export default {
         token = response.data.access_token
         this.$store.dispatch('user', response.data.data)
         this.$router.push('/')
-      }).catch(error => {
-        console.log(error);
+      }).catch((error) => {
+        alert('Username atau password salah!')
+        console.log(error)
         return
       });
 
