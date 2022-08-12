@@ -126,7 +126,12 @@
           <hr class="mt-1 mb-2">
           <div class="d-flex">
             <div class="ms-auto me-2">
-              <button type="button" class="border-button">
+              <button 
+                type="button"
+                class="border-button"
+                @click="save()"
+                data-bs-dismiss="modal"
+              >
                 <img :src="saveIcon" class="save-icon">
                 <span>Save</span>
               </button>
@@ -159,6 +164,13 @@ import { mapGetters } from "vuex";
 export default {
   name: 'CheckoutModal',
   methods: {
+    save: function() {
+      if(this.items.length == 0) {
+        alert('item masih kosong!')
+        return
+      }
+      this.$emit('save', this.notes)
+    },
     print: function() {
       if(this.items.length == 0) {
         alert('item masih kosong!')

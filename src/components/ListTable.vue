@@ -162,6 +162,7 @@ export default {
     },
     addNewItem: function (product, index) {
       document.getElementById('search_sku_' + index).style.display = 'none'
+      document.getElementById('search_item_' + index).style.display = 'none'
       this.$emit('addNewItem', {product, index})
     },
     formatRupiah: function (angka) {

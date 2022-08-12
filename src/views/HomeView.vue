@@ -146,6 +146,7 @@
           :subtotalItems="subtotalItems"
           :invoice="invoice"
           @print="print($event)"
+          @save="save($event)"
         />
       </div>
     </div>
@@ -279,6 +280,45 @@ export default {
       }).catch(error => {
         console.log(error)
       })
+    },
+    save: async function (notes) {
+      let cart = {
+        customer_id: this.selectedCustomer.id,
+        subtotal: this.detailOrder.subtotal,
+        discount: this.detailOrder.discount,
+        tax: this.detailOrder.tax,
+        total_price: this.detailOrder.totalPrice,
+        notes: notes,
+      }
+      const response = await axios.post('carts', cart, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+
+      let cartItems = []
+      let i = 0
+      this.tbody[this.activeTab - 1].items.forEach(item => {
+        let cartItem = {
+          cart_id: response.data.data.id,
+          product_id: item.product ? item.product.id : 0,
+          quantity: item.quantity,
+          subtotal: this.subtotalItems[i],
+        }
+        cartItems.push(cartItem)
+        i += 1
+      })
+      for(i = 0; i < cartItems.length; i++) {
+        await axios.post('cart_items', cartItems[0], {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
+        }).catch(error => {
+          console.log(error)
+        })
+      }
     },
     print: async function (notes) {
       // change notes in invoice
