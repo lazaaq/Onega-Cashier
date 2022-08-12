@@ -282,6 +282,7 @@ export default {
       })
     },
     save: async function (notes) {
+      // cart
       let cart = {
         customer_id: this.selectedCustomer.id,
         subtotal: this.detailOrder.subtotal,
@@ -290,14 +291,7 @@ export default {
         total_price: this.detailOrder.totalPrice,
         notes: notes,
       }
-      const response = await axios.post('carts', cart, {
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token')
-        }
-      }).catch(error => {
-        console.log(error)
-      })
-
+      // cart items
       let cartItems = []
       let i = 0
       this.tbody[this.activeTab - 1].items.forEach(item => {
@@ -310,6 +304,16 @@ export default {
         cartItems.push(cartItem)
         i += 1
       })
+      
+      // store to db cart
+      const response = await axios.post('carts', cart, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+      // store to db cartitems
       for(i = 0; i < cartItems.length; i++) {
         await axios.post('cart_items', cartItems[0], {
           headers: {
